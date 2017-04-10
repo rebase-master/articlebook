@@ -2,9 +2,10 @@
 
 namespace UserBundle\Entity;
 
-use AppBundle\Util\StringOperations;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\AdvancedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle;
@@ -17,7 +18,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @UniqueEntity(fields="email", message="Email already exists!")
  * @ORM\Entity(repositoryClass="UserBundle\Repository\UserRepository")
  */
-class User
+class User implements UserInterface, AdvancedUserInterface, \Serializable
 {
     /**
      * @var int
@@ -57,25 +58,18 @@ class User
 	private $username;
 
 	/**
-	 * @var boolean
-	 *
-	 * @ORM\Column(name="gender", type="boolean")
-     */
-    private $gender;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="password", type="string", length=255)
-     */
-    private $password;
+	 * @Assert\NotBlank()
+	 * @Assert\Length(max=4096)
+	 */
+	private $plainPassword;
 
 	/**
-	 * @var string
+	 * The below length depends on the "algorithm" you use for encoding
+	 * the password, but this works well with bcrypt.
 	 *
-	 * @ORM\Column(name="salt", type="string", length=255, nullable=true)
+	 * @ORM\Column(type="string", length=64)
 	 */
-	private $salt;
+	private $password;
 
 	/**
 	 * @var array
@@ -127,18 +121,8 @@ class User
 	 */
 	private $articles;
 
-	/**
-	 * @var string
-	 *
-	 * @ORM\OneToMany(targetEntity="ArticlesBundle\Entity\Category", mappedBy="user")
-	 * @ORM\OrderBy({"created" = "DESC"})
-	 */
-	private $interests;
-
 	public function __construct(){
-		$this->salt     = base_convert(sha1(uniqid(mt_rand(),true)),16,36);
 		$this->articles   = new ArrayCollection();
-		$this->interests   = new ArrayCollection();
 	}
 
 
@@ -224,86 +208,24 @@ class User
         return $this->email;
     }
 
-    /**
-     * Set gender
-     *
-     * @param string $gender
-     *
-     * @return User
-     */
-    public function setGender($gender)
-    {
-        $this->gender = $gender;
-
-        return $this;
-    }
-
-    /**
-     * Get gender
-     *
-     * @return string
-     */
-    public function getGender()
-    {
-        return $this->gender;
-    }
-
-    /**
-     * Set interests
-     *
-     * @param string $interests
-     *
-     * @return User
-     */
-    public function setInterests($interests)
-    {
-        $this->interests = $interests;
-
-        return $this;
-    }
-
-    /**
-     * Get interests
-     *
-     * @return string
-     */
-    public function getInterests()
-    {
-        return $this->interests;
-    }
-
-    /**
-     * Set password
-     *
-     * @param string $password
-     *
-     * @return User
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * Get password
-     *
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-	/**
-	 * Get salt
-	 *
-	 * @return string
-	 */
-	public function getSalt()
+	public function getPlainPassword()
 	{
-		return $this->salt;
+		return $this->plainPassword;
+	}
+
+	public function setPlainPassword($password)
+	{
+		$this->plainPassword = $password;
+	}
+
+	public function getPassword()
+	{
+		return $this->password;
+	}
+
+	public function setPassword($password)
+	{
+		$this->password = $password;
 	}
 
 	/**
@@ -378,12 +300,31 @@ class User
 	 * Set registrationKey
 	 *
 	 * @param string $registrationKey
-	 * @return User
+	 * @return string
 	 */
-	public function setRegistrationKey($userId)
+	public function setRegistrationKey()
 	{
-		$this->registrationKey = StringOperations::generate_random_string(10).'-'.md5($userId);
+		$this->registrationKey = $this->generate_random_string(10).'-'.md5(date('s'));
 		return $this;
+	}
+
+	/**
+	 * Return the randomly generated seed for registration key
+	 *
+	 * @param int $length
+	 * @return string
+	 */
+	public static function generate_random_string($length=32){
+		//Allowed random string characters
+		$seeds='abcdefghijklmnopqrstuvwxyz0123456789';
+
+		//generate the random string
+		$str="";
+		$count=strlen($seeds);
+		for($i=0;$i<$length;$i++){
+			$str.=$seeds[mt_rand(0,$count-1)];
+		}
+		return $str;
 	}
 
 	/**
@@ -458,6 +399,114 @@ class User
 	public function setUsername($username)
 	{
 		$this->username = $username;
+	}
+
+	/**
+	 * Removes sensitive data from the user.
+	 *
+	 * This is important if, at any given point, sensitive information like
+	 * the plain-text password is stored on this object.
+	 */
+	public function eraseCredentials()
+	{
+		// TODO: Implement eraseCredentials() method.
+	}
+
+	/**
+	 * Returns the salt that was originally used to encode the password.
+	 *
+	 * This can return null if the password was not encoded using a salt.
+	 *
+	 * @return string|null The salt
+	 */
+	public function getSalt()
+	{
+		return null;
+	}
+
+	/**
+	 * (PHP 5 &gt;= 5.1.0)<br/>
+	 * String representation of object
+	 * @link http://php.net/manual/en/serializable.serialize.php
+	 * @return string the string representation of the object or null
+	 */
+	public function serialize()
+	{
+		// TODO: Implement serialize() method.
+	}
+
+	/**
+	 * (PHP 5 &gt;= 5.1.0)<br/>
+	 * Constructs the object
+	 * @link http://php.net/manual/en/serializable.unserialize.php
+	 * @param string $serialized <p>
+	 * The string representation of the object.
+	 * </p>
+	 * @return void
+	 */
+	public function unserialize($serialized)
+	{
+		// TODO: Implement unserialize() method.
+	}
+
+	/**
+	 * Checks whether the user's account has expired.
+	 *
+	 * Internally, if this method returns false, the authentication system
+	 * will throw an AccountExpiredException and prevent login.
+	 *
+	 * @return bool true if the user's account is non expired, false otherwise
+	 *
+	 * @see AccountExpiredException
+	 */
+	public function isAccountNonExpired()
+	{
+		// TODO: Implement isAccountNonExpired() method.
+	}
+
+	/**
+	 * Checks whether the user is locked.
+	 *
+	 * Internally, if this method returns false, the authentication system
+	 * will throw a LockedException and prevent login.
+	 *
+	 * @return bool true if the user is not locked, false otherwise
+	 *
+	 * @see LockedException
+	 */
+	public function isAccountNonLocked()
+	{
+		// TODO: Implement isAccountNonLocked() method.
+	}
+
+	/**
+	 * Checks whether the user's credentials (password) has expired.
+	 *
+	 * Internally, if this method returns false, the authentication system
+	 * will throw a CredentialsExpiredException and prevent login.
+	 *
+	 * @return bool true if the user's credentials are non expired, false otherwise
+	 *
+	 * @see CredentialsExpiredException
+	 */
+	public function isCredentialsNonExpired()
+	{
+		// TODO: Implement isCredentialsNonExpired() method.
+	}
+
+	/**
+	 * Checks whether the user is enabled.
+	 *
+	 * Internally, if this method returns false, the authentication system
+	 * will throw a DisabledException and prevent login.
+	 *
+	 * @return bool true if the user is enabled, false otherwise
+	 *
+	 * @see DisabledException
+	 */
+	public function isEnabled()
+	{
+		// TODO: Implement isEnabled() method.
 	}
 }
 

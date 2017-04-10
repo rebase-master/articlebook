@@ -1,0 +1,27 @@
+{% extends '::session.html.twig' %}
+{% block title ' Login' %}
+    {% block body %}
+        {% block alert_login %}
+        {% endblock %}
+        <div class="row-fluid hpmc">
+            <div class="register-form container">
+                <article>{% if error is defined and error %}
+                        <div class="login_error">
+                        <p>{{ error.message|trans }}</p>
+                        </div>{% endif %}{% if message is defined and message %}
+                        <div class="alert-message-success">{{ message }}</div>{% endif %}
+                    <form action="{{ path('login_check') }}" method="post">
+                        <label for="username">Username/Email:</label>
+                        <input type="text" id="username" name="_username" value="{{ last_username is defined and last_username? last_username:'' }}" />
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="_password" />
+                        <br />
+                        <div class="remember-me">
+                        <br />
+                        <br />
+                        <button class="btn btn-primary" type="submit">login</button>
+                    </form>
+                </article>
+            </div>
+        </div>
+    {% endblock %}

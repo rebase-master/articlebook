@@ -1,20 +1,17 @@
-articles_article:
-    resource: "@ArticlesBundle/Controller/ArticleController.php"
-    type:     annotation
-
-user_user:
-    resource: "@UserBundle/Controller/UserController.php"
-    type:     annotation
-
 articles:
     resource: "@ArticlesBundle/Controller/"
     type:     annotation
-    prefix:   /articles
+    prefix:   articles/
 
-user:
-    resource: "@UserBundle/Controller/"
+users:
+    resource: "@UserBundle/Controller/UserController.php"
     type:     annotation
-    prefix:   /users
+    prefix:   users/
+
+sessions:
+    resource: "@UserBundle/Controller/SessionController.php"
+    type:     annotation
+    prefix:   session/
 
 app:
     resource: '@AppBundle/Controller/'

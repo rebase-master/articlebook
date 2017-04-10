@@ -7,15 +7,6 @@
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
-
-        <div class="alert alert-info text-center">
-            {% if app.session.flashBag.has('registrationSuccess') %}
-                {% for msg in app.session.flashBag.get('registrationSuccess')  %}
-                    {{ msg }}
-                {% endfor %}
-            {% endif %}
-        </div>
-
         {% block body %}{% endblock %}
         {% block javascripts %}{% endblock %}
     </body>
