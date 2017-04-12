@@ -58,29 +58,52 @@
 
                 </div><!-- postbox -->
 
-                <div class="posts">
+                <div class="loading" ng-if="articles == null">
+                    <h3>Loading...</h3>
+                </div>
+                <div class="posts" ng-if="articles">
 
-                    {% for article in articles %}
-                        <div class="post">
+                    <div class="post" ng-repeat="article in articles track by $index">
 
-                            <div class="link-group">
-                                <a href="{{ article.link }}" target="_blank">
-                                    <img src="{{ article.imageUrl }}" alt="Article Photo"/>
-                                    <div class="info">
-                                        <h3>{{ article.title }}</h3>
-                                        <p>{{ article.description }}</p>
-                                    </div>
-                                </a>
-                            </div>{#link-group#}
-                            <div class="interaction">
-                                <ul>
-                                    <li><a href="">Like</a></li>
-                                    <li><a href="">Share</a></li>
-                                </ul>
-                            </div>
+                        <div class="link-group">
+                            <a ng-href="{[ article.link ]}" target="_blank">
+                                <img ng-src="{[ article.imageUrl ]}" alt="Article Photo"/>
+                                <div class="info">
+                                    <h3>{[ article.title ]}</h3>
+                                    <p>{[ article.description ]}</p>
+                                </div>
+                            </a>
+                        </div>{#link-group#}
+                        <div class="interaction">
+                            <ul>
+                                <li><a href="">Like</a></li>
+                                <li><a href="">Share</a></li>
+                            </ul>
+                        </div>
 
-                        </div>{#post#}
-                    {% endfor %}
+                    </div>{#post#}
+
+                    {#{% for article in articles %}#}
+                        {#<div class="post">#}
+
+                            {#<div class="link-group">#}
+                                {#<a href="{{ article.link }}" target="_blank">#}
+                                    {#<img src="{{ article.imageUrl }}" alt="Article Photo"/>#}
+                                    {#<div class="info">#}
+                                        {#<h3>{{ article.title }}</h3>#}
+                                        {#<p>{{ article.description }}</p>#}
+                                    {#</div>#}
+                                {#</a>#}
+                            {#</div>&#123;&#35;link-group&#35;&#125;#}
+                            {#<div class="interaction">#}
+                                {#<ul>#}
+                                    {#<li><a href="">Like</a></li>#}
+                                    {#<li><a href="">Share</a></li>#}
+                                {#</ul>#}
+                            {#</div>#}
+
+                        {#</div>&#123;&#35;post&#35;&#125;#}
+                    {#{% endfor %}#}
 
                 </div><!-- posts -->
 

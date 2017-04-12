@@ -44,8 +44,8 @@ class ArticleController extends Controller
 		    }else{
 			    $encoders = array(new JsonEncoder());
 			    $normalizers = array(new ObjectNormalizer());
-
 			    $serializer = new Serializer($normalizers, $encoders);
+			    
 			    $em = $this->getDoctrine()->getManager();
 			    $category = $this->getDoctrine()->getRepository('ArticlesBundle:Category')->findOneBy(array('id' => $articleCategory));
 			    $article = new Article();
@@ -56,6 +56,7 @@ class ArticleController extends Controller
 			    $article->setDomain(parse_url($link)['host']);
 			    $article->setCategory($category);
 			    $article->setUser($user);
+			    $article->setIsDeleted(false);
 
 			    foreach ($articleTags as $tag) {
 				    $Tag = $this->getDoctrine()->getRepository('ArticlesBundle:Tag')->findOneBy(array('name' => $tag->name));
@@ -94,16 +95,59 @@ class ArticleController extends Controller
      */
     public function indexAction()
     {
-        $em = $this->getDoctrine()->getManager();
+        $articles = $this->getDoctrine()->getRepository('ArticlesBundle:Article')->findAll();
 
-        $articles = $em->getRepository('ArticlesBundle:Article')->findAll();
-
-        return $this->render('article/index.html.twig', array(
+	    $articles = $this->prepareArticlesForApi($articles);
+//	    var_dump($articles);
+//	    die;
+        return new JsonResponse(array(
             'articles' => $articles,
         ));
     }
 
-    /**
+	/**
+	 * Prepare quotes data
+	 * @param $quotes
+	 * @return mixed
+	 */
+	private function prepareArticlesForApi($articles){
+		/**
+		 * @var \ArticlesBundle\Entity\Article $article
+		 */
+		$result = [];
+		$ctr = 0;
+		foreach ($articles as $article) {
+
+			$result[$ctr]['id']          = $article->getId();
+			$result[$ctr]['username']    = $article->getUser()->getUsername();
+			$result[$ctr]['title']       = $article->getTitle();
+			$result[$ctr]['imageUrl']    = $article->getImageUrl();
+			$result[$ctr]['link']        = $article->getLink();
+			$result[$ctr]['description'] = $article->getDescription();
+			$result[$ctr]['domain']      = $article->getDomain();
+			$result[$ctr]['category']    = $article->getCategory()->getName();
+			$result[$ctr]['createdAt']   = $article->getCreatedAt();
+
+//			$articleComments = $this->getRepository('ArticleComments')->getArticleCommentsWithUserInfo($articles[$i]['id']);
+//			$comments = array();
+//			foreach ($articleComments as $key => $qc) {
+//				$comments[$key]['id'] = $qc['id'];
+//				$comments[$key]['userId'] = $qc['uid'];
+//				$comments[$key]['comment'] = $qc['comment'];
+//				$comments[$key]['username'] = $qc['username'];
+//			}
+//			$articles[$i]['comments'] = $comments;
+
+//			$quoteTags = $this->getDoctrine()->getRepository('Tag')->getQuoteTagsName($articles[$i]['id']);
+//			$articles[$i]['tags'] = $quoteTags;
+			$ctr++;
+		}//for loop
+
+		return $result;
+
+	}//Preparearticles
+
+	/**
      * Finds and displays a article entity.
      *
      * @Route("/{id}", name="article_show")

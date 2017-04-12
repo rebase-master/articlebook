@@ -121,5 +121,8 @@ textarea{
     max-height: 310px;
     width: 100%;
 }
-
+.loading {
+    margin: 30px;
+    text-align: center;
+}
 

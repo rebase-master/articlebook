@@ -17,17 +17,17 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
     "use strict";
 
     $scope.articleLink = '';
-    //$scope.articleCategory = 'Choose Category';
     $scope.atags = [];
+    $scope.articles = null;
+
+    loadArticles();
 
     $scope.addTags = function (event) {
         var key = event.keyCode || event.which,
             target = event.target;
 
         if(key == 13){
-            console.log("value: "+$(target).val());
             $scope.atags.push({name: $(target).val()});
-            console.log("value: "+$scope.atags);
             $(target).val('');
         }
     }//addTag()
@@ -35,32 +35,41 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
     $scope.removeTag = function (event) {
         var target = event.target,
             tag = $(target).prev('.tag').text().substr(1);
-        console.log("deleting: ", tag);
         $scope.atags = $scope.atags.filter(function( obj ) {
             return obj.name !== tag;
         });
-            //$scope.atags.splice($scope.atags.,1)
-            //
-            //$scope.atags.push({name: $(target).val()});
-            //$(target).val('');
-        //}
     }//removeTag()
+
+    function loadArticles(){
+
+        var url = baseUrl+'articles/';
+        NProgress.start();
+        $http({
+            method: 'GET',
+            url: url,
+            cache: true
+        }).success(function(response) {
+            console.log("articles: ");
+            console.log(response.articles);
+            $scope.articles = response.articles;
+            NProgress.done();
+
+        }).error(function (response) {
+            NProgress.done();
+        });
+
+
+    }//loadArticles
 
     $scope.addArticle = function () {
 
-        console.log("clicked");
-        console.log($scope.articleLink);
         var url = baseUrl+'articles/new';
-        console.log($scope.articleLink);
-        console.log($scope.articleCategory);
-        console.log($scope.atags);
         if($scope.articleLink != '' && $scope.articleCategory != '')
             saveArticle(url);
     };
 
-    function saveArticle(url, val) {
+    function saveArticle(url) {
         NProgress.start();
-        console.log(val);
         $http({
             method: 'POST',
             url: url,
@@ -72,7 +81,6 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
         }).error(function (response) {
             NProgress.done();
         });
-
     }
 
 
