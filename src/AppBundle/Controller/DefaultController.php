@@ -15,6 +15,24 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-	    return array();
+	    if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+		    return $this->redirectToRoute('login');
+	    }
+	    $user = $this->get('security.token_storage')->getToken()->getUser();
+
+	    $articles = $this->getDoctrine()->getRepository('ArticlesBundle:Article')->findAll();
+//	    var_dump($articles);
+//	    die;
+	    return array(
+		    'articles' => $articles
+	    );
     }
+
+	/**
+	 * @Route("/views/{viewId}", name="view_template")
+	 */
+	public function getViewAction($viewId){
+		return $this->render('AppBundle:AngularViews:'.$viewId);
+	}
+
 }

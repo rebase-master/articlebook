@@ -1,0 +1,124 @@
+body{
+    background-color: #fafafa;
+}
+a, a:focus, a:visited{
+    outline: none;
+    color: #314a7b;
+}
+textarea{
+    resize: vertical;
+}
+
+#main{
+    margin-top: 30px;
+    margin-bottom: 50px;
+    padding: 20px;
+}
+
+#header{
+    padding: 20px 10px 10px;
+    border-bottom: 5px solid #eeeeee;
+}
+
+#header .logo img{
+    width: 100%;
+}
+#header .logo{
+    padding: 0;
+}
+#header .logo a{
+    display: block;
+}
+#header .top-right-ui-username {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+
+#homepage .home_common{
+    /*border: 1px solid #ccc;*/
+    /*background-color: #f8f8f8;*/
+    min-height: 300px;
+}
+
+#homepage .postbox{
+    padding: 0 50px;
+}
+#homepage .postbox .form-group{
+    margin: 0;
+}
+#homepage .postbox .postinfo {
+    background-color: #fff;
+    /*padding: 5px 10px;*/
+    /*border-top: 1px solid #ddd;*/
+}
+#homepage .postbox .postinfo .clearfix{
+    background-color: #eee;
+    padding: 10px 20px;
+}
+#homepage .postbox form {
+    border: 1px solid #eee;
+}
+#homepage .postbox textarea {
+    resize: none;
+    padding: 15px 10px 10px;
+    min-height: 80px;
+}
+#atags .label{
+    background-color: #eee;
+    border: 1px solid #e5e5e5;
+    color: #777;
+    font-size: 14px;
+    padding: 3px 4px;
+}
+#atags .list {
+    padding: 0 10px;
+}
+#atags .label span.glyphicon {
+    font-size: 10px;
+    color: #999;
+    cursor: pointer;
+    margin-left: 4px;
+    vertical-align: inherit;
+    padding-right: 2px;
+}
+
+#homepage .postbox .form-control{
+    border: none;
+    box-shadow: none;
+}
+#homepage .postbox .form-control:focus, #homepage .postbox .form-control:active{
+    border: none;
+    border-color: transparent;
+    box-shadow: none;
+    outline: none;
+}
+.posts-group .post {
+    border: 1px solid #eee;
+    background-color: #fff;
+    margin-bottom: 30px;
+}
+.posts-group .post .info {
+    padding: 0 10px 10px;
+    border-top: 1px solid #ddd;
+    margin: 0 20px;
+}
+.posts-group .post .info h3{
+    color: #4a4a4a;
+}
+.posts-group .post .info p{
+    color: #888888;
+}
+.posts-group .posts {
+    padding: 20px 50px;
+}
+.posts-group .link-group a {
+    text-decoration: none;
+}
+
+.posts-group .link-group img {
+    max-height: 310px;
+    width: 100%;
+}
+
+

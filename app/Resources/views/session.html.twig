@@ -1,13 +1,66 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+<head>
+
+    <meta charset="UTF-8" />
+
+    <title>
+        ArticleBook - Read and Share Articles
+    </title>
+
+    {% block stylesheets %}
+        {% stylesheets
+        'bundles/app/css/thirdparty/bootstrap.min.css'
+        'bundles/app/css/thirdparty/nprogress.css'
+        'bundles/app/css/style.css'
+        filter='cssrewrite'
+        %}
+        {#filter='cssrewrite'#}
+
+        <link rel="stylesheet" media="screen" href="{{ asset_url }}" />
+        {% endstylesheets %}
+
+    {% endblock %}
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
+
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
+
+    <div id="container" class="container-fluid">
+
+        <header id="header" class="clearfix">
+            <div class="col-sm-3 logo">
+                <a href="{{ path('homepage') }}">
+                    <img src="{{ asset('bundles/app/images/ahlogo.png') }}" alt="articleHub" />
+                </a>
+            </div>
+        </header><!-- header -->
+
+        <div id="main">
+            {% if app.session.flashBag.has('event') %}
+                <div class="alert alert-info text-center">
+                    {% for msg in app.session.flashBag.get('event')  %}
+                        {{ msg }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div id="container">
+                {% block body %}{% endblock %}
+            </div>
+        </div><!-- main -->
+
+    </div><!-- #container -->
+
+    {% block javascripts %}
+    {% endblock %}
+
+</body>
+
 </html>

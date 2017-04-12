@@ -63,9 +63,9 @@ class Article
     /**
      * @var string
      *
-     * @ORM\Column(name="isDeleted", type="string", length=255)
+     * @ORM\Column(name="isDeleted", type="string", length=255, options={ "default" = false}, nullable=true)
      */
-    private $isDeleted;
+    private $isDeleted = false;
 
 	/**
 	 * @var \Datetime $createdAt
@@ -99,7 +99,7 @@ class Article
 	protected $user;
 
 	/**
-	 * @ORM\OneToOne(targetEntity="ArticlesBundle\Entity\Category", fetch="EAGER")
+	 * @ORM\ManyToOne(targetEntity="ArticlesBundle\Entity\Category", fetch="EAGER")
 	 * @ORM\JoinColumn(name="categoryId", referencedColumnName="id")
 	 */
 	protected $category;

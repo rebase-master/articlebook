@@ -4,6 +4,7 @@ namespace UserBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Serializable;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -16,9 +17,10 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *
  * @ORM\Table(name="user")
  * @UniqueEntity(fields="email", message="Email already exists!")
+ * @UniqueEntity(fields="username", message="Username already exists!")
  * @ORM\Entity(repositoryClass="UserBundle\Repository\UserRepository")
  */
-class User implements UserInterface, AdvancedUserInterface, \Serializable
+class User implements UserInterface, AdvancedUserInterface, Serializable
 {
     /**
      * @var int
@@ -67,9 +69,16 @@ class User implements UserInterface, AdvancedUserInterface, \Serializable
 	 * The below length depends on the "algorithm" you use for encoding
 	 * the password, but this works well with bcrypt.
 	 *
-	 * @ORM\Column(type="string", length=64)
+	 * @ORM\Column(type="string", length=255)
 	 */
 	private $password;
+
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="salt", type="string", length=255)
+	 */
+	private $salt;
 
 	/**
 	 * @var array
@@ -116,13 +125,14 @@ class User implements UserInterface, AdvancedUserInterface, \Serializable
 
 	/**
 	 * @ORM\OneToMany(targetEntity="ArticlesBundle\Entity\Article", mappedBy="user")
-	 * @ORM\OrderBy({"created" = "DESC"})
+	 * @ORM\OrderBy({"createdAt" = "DESC"})
 	 *
 	 */
 	private $articles;
 
 	public function __construct(){
 		$this->articles   = new ArrayCollection();
+		$this->salt = base_convert(sha1(uniqid(mt_rand(),true)),16,36);
 	}
 
 
@@ -421,32 +431,8 @@ class User implements UserInterface, AdvancedUserInterface, \Serializable
 	 */
 	public function getSalt()
 	{
+//		return $this->salt;
 		return null;
-	}
-
-	/**
-	 * (PHP 5 &gt;= 5.1.0)<br/>
-	 * String representation of object
-	 * @link http://php.net/manual/en/serializable.serialize.php
-	 * @return string the string representation of the object or null
-	 */
-	public function serialize()
-	{
-		// TODO: Implement serialize() method.
-	}
-
-	/**
-	 * (PHP 5 &gt;= 5.1.0)<br/>
-	 * Constructs the object
-	 * @link http://php.net/manual/en/serializable.unserialize.php
-	 * @param string $serialized <p>
-	 * The string representation of the object.
-	 * </p>
-	 * @return void
-	 */
-	public function unserialize($serialized)
-	{
-		// TODO: Implement unserialize() method.
 	}
 
 	/**
@@ -461,7 +447,7 @@ class User implements UserInterface, AdvancedUserInterface, \Serializable
 	 */
 	public function isAccountNonExpired()
 	{
-		// TODO: Implement isAccountNonExpired() method.
+		return true;
 	}
 
 	/**
@@ -476,7 +462,7 @@ class User implements UserInterface, AdvancedUserInterface, \Serializable
 	 */
 	public function isAccountNonLocked()
 	{
-		// TODO: Implement isAccountNonLocked() method.
+		return !$this->getIsBlocked();
 	}
 
 	/**
@@ -491,7 +477,7 @@ class User implements UserInterface, AdvancedUserInterface, \Serializable
 	 */
 	public function isCredentialsNonExpired()
 	{
-		// TODO: Implement isCredentialsNonExpired() method.
+		return true;
 	}
 
 	/**
@@ -506,7 +492,33 @@ class User implements UserInterface, AdvancedUserInterface, \Serializable
 	 */
 	public function isEnabled()
 	{
-		// TODO: Implement isEnabled() method.
+		return $this->getIsActive();
+	}
+
+	/** @see \Serializable::serialize() */
+	public function serialize()
+	{
+		return serialize(array(
+			$this->id,
+			$this->username,
+			$this->email,
+			$this->password,
+			// see section on salt below
+			// $this->salt,
+		));
+	}
+
+	/** @see \Serializable::unserialize() */
+	public function unserialize($serialized)
+	{
+		list (
+			$this->id,
+			$this->username,
+			$this->email,
+			$this->password,
+			// see section on salt below
+			// $this->salt
+			) = unserialize($serialized);
 	}
 }
 

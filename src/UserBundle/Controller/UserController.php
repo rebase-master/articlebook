@@ -2,6 +2,7 @@
 
 namespace UserBundle\Controller;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use UserBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -10,11 +11,26 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component
 /**
  * User controller.
  *
- * @Route("users")
  */
 class UserController extends Controller
 {
-    /**
+
+	/**
+	 * @Route("/{username}", name="user_profile")
+	 * @Template()
+	 */
+
+	public function profileAction($username){
+
+		$user = $this->getDoctrine()->getRepository('UserBundle:User')->findOneBy(array('username' => strip_tags($username)));
+
+
+		return array(
+			'user' => $user
+		);
+	}
+
+	/**
      * Lists all user entities.
      *
      * @Route("/", name="user_index")
@@ -133,4 +149,5 @@ class UserController extends Controller
             ->getForm()
         ;
     }
+
 }

@@ -13,6 +13,7 @@
 !var/sessions/.gitkeep
 !var/SymfonyRequirements.php
 /vendor/
-/web/bundles/
 /.idea
 /phpunit.xml.dist
+/web/css/
+/web/js

@@ -3,6 +3,13 @@
     <div class="register-form container">
         <div class="row-fluid">
             <h1>Register</h1>
+            {% if error is defined %}
+                <div class="alert alert-danger text-center">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            {% if message is defined and message %}
+                <div class="alert-message-success">{{ message }}</div>
+            {% endif %}
             <form id="register-form" class="clearfix" action="{{ path('register') }}" method="POST">
                 <div class="register-container span6">
                     <section class="error" style="display:block;">{{ form_errors(form) }}</section>
@@ -26,7 +33,12 @@
                     </div>
                     <br />
                     <input class="btn btn-primary" type="submit" name="submit" id="submit" value="Submit" />
-                </div>{{ form_rest(form) }}</form>
+                </div>
+                {{ form_rest(form) }}
+            </form>
+
+            <p>Already have an account? <a href="{{ path('login') }}">Login</a></p>
+
         </div>
     </div>
     </div>

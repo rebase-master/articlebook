@@ -11,7 +11,7 @@ users:
 sessions:
     resource: "@UserBundle/Controller/SessionController.php"
     type:     annotation
-    prefix:   session/
+    prefix:   /
 
 app:
     resource: '@AppBundle/Controller/'

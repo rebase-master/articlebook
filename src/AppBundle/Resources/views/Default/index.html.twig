@@ -1,1 +1,81 @@
-<h1>Homepage</h1>
+{% extends '::base.html.twig' %}
+
+{% block body %}
+
+    <div id="homepage" class="clearfix" ng-app="ahApp" ng-controller="ArticleController">
+
+        <div class="col-sm-12 col-md-8 home_common" id="content">
+
+            <div class="posts-group">
+                <div class="postbox">
+
+                    <form class="form" name="caForm" novalidate ng-submit="caForm.$valid && addArticle()">
+
+                        <div class="form-group">
+                            <textarea
+                                    ng-required="true"
+                                    ng-model="articleLink"
+                                    class="form-control"
+                                    name="article-link"
+                                    id="article-link"
+                                    placeholder="Paste a link here to share"></textarea>
+                        </div>
+                        <div class="postinfo">
+                            <div id="atags">
+                                <div class="list" ng-if="atags">
+                                    <span class="label" ng-repeat="tag in atags">
+                                        <span class="tag">#{[ tag.name ]}</span>
+                                        <span class="glyphicon glyphicon-remove" ng-click="removeTag($event)"></span>
+                                    </span>
+                                </div>
+                                <input class="form-control" ng-keypress="addTags($event)" type="text" placeholder="Type and press ENTER to add tags"/>
+                            </div>
+
+                            <div class="clearfix">
+                                <button class="btn btn-info btn-md pull-right" type="submit" ng-disabled="caForm.$invalid">
+                                    <span class="glyphicon glyphicon-plus"></span>Add Article
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div><!-- postbox -->
+
+                <div class="posts">
+
+                    {% for article in articles %}
+                        <div class="post">
+
+                            <div class="link-group">
+                                <a href="{{ article.link }}" target="_blank">
+                                    <img src="{{ article.imageUrl }}" alt="Article Photo"/>
+                                    <div class="info">
+                                        <h3>{{ article.title }}</h3>
+                                        <p>{{ article.description }}</p>
+                                    </div>
+                                </a>
+                            </div>{#link-group#}
+                            <div class="interaction">
+                                <ul>
+                                    <li><a href="">Like</a></li>
+                                    <li><a href="">Share</a></li>
+                                </ul>
+                            </div>
+
+                        </div>{#post#}
+                    {% endfor %}
+
+                </div><!-- posts -->
+
+            </div><!-- psots-group -->
+
+        </div>{#content#}
+
+        <div class="col-sm-12 col-md-4 home_common" id="sidebar">
+
+            <h3>Recent Articles</h3>
+        </div>{#sidebar#}
+
+    </div>{#homepage#}
+
+{%  endblock %}

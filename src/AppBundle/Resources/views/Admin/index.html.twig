@@ -1,0 +1,92 @@
+{% extends '::base_admin.html.twig' %}
+
+{% block body %}
+
+    <div id="admin">
+        <div class="clearfix">
+
+            <div class="col-sm-3 col-md-2" id="sidebar">
+                <ul class="list-group">
+                    <li class="list-group-item {{ activeCategory == 'users'?'active':'' }}"><a href="#">Users</a></li>
+                    <li class="list-group-item {{ activeCategory == 'tags'?'active':'' }}"><a href="#">Tags</a></li>
+                    <li class="list-group-item {{ activeCategory == 'category'?'active':'' }}"><a href="#">Categories</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-9 col-md-10" id="content">
+                <h2>{{ users|length }} users found!</h2>
+                <div id="users-list">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>isAdmin?</th>
+                                <th>isActive?</th>
+                                <th>isBlocked</th>
+                                <th>Created On</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for index, user in users %}
+                                <tr>
+                                    <td>{{ index+1 }}</td>
+                                    <td>{{ user.firstName }} {{ user.lastName }}</td>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>
+                                        {% if 'ROLE_ADMIN' in user.roles %}
+                                            Yes
+                                        {% else %}
+                                            No
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if user.isActive %}
+                                            Yes
+                                        {% else %}
+                                            No
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if user.isBlocked %}
+                                            Yes
+                                        {% else %}
+                                            No
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.createdAt|date('m/d/Y H:i') }}</td>
+                                    <td>
+                                        {% if user.isActive %}
+                                            <span onclick="activateUser(user.id, -1)" class="btn btn-sm btn-primary">Deactivate</span>
+                                        {% else %}
+                                            <span onclick="activateUser(user.id, 1)" class="btn btn-sm btn-primary">Activate</span>
+                                        {% endif %}
+
+                                        {% if 'ROLE_ADMIN' in user.roles %}
+                                            <span onclick="makeAdmin(user.id, -1)" class="btn btn-sm btn-success">Remove as Admin</span>
+                                        {% else %}
+                                            <span onclick="makeAdmin(user.id, 1)" class="btn btn-sm btn-success">Make Admin</span>
+                                        {% endif %}
+
+                                        {% if user.isBlocked %}
+                                            <span onclick="blockUser(user.id, -1)" class="btn btn-sm btn-warning">Unblock</span>
+                                        {% else %}
+                                            <span onclick="blockUser(user.id, 1)" class="btn btn-sm btn-warning">Block</span>
+                                        {% endif %}
+
+                                        <span onclick="deleteUser(user.id)" class="btn btn-sm btn-danger">Delete</span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+{%  endblock %}

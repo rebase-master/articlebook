@@ -24,34 +24,36 @@ use UserBundle\Form\UserRegistrationType;
 class SessionController extends Controller
 {
 	/**
-	 * @Route("/login",name="login")
+	 * @Route("/login", name="login")
 	 * @Template()
 	 */
 	public function loginAction(Request $request)
 	{
-		if($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')){
-			return $this->redirect($this->generateUrl('homepage'));
-		}else{
-			$session = $request->getSession();
-			if ($request->attributes->has(Security::AUTHENTICATION_ERROR)) {
-				$error = $request->attributes->get(Security::AUTHENTICATION_ERROR);
-			} else {$error = $session->get(Security::AUTHENTICATION_ERROR);$session->remove(Security::AUTHENTICATION_ERROR);}
-			return
-				array(
-					'last_username' => $session->get(Security::LAST_USERNAME),
-					'error'         => $error,
+		$helper = $this->get('security.authentication_utils');
+
+		return array(
+				'last_username' => $helper->getLastUsername(),
+				'error'         => $helper->getLastAuthenticationError(),
 				);
-		}
 	}
 
-	/** @Route("/login_check", name="login_check") */
-	public function loginCheckAction(){}
+	/**
+	 * @Route("/login_check", name="security_login_check")
+	 */
+	public function loginCheckAction()
+	{
+
+	}
 
 	/** @Route("/logout", name="logout")  */
 	public function logoutAction(){}
 
 	private function encodePassword($user, $plainPassword)
-	{ $encoder = $this->get('security.encoder_factory')->getEncoder($user);
+	{
+		/**
+		 * @var User $user
+		 */
+		$encoder = $this->container->get('security.encoder_factory')->getEncoder($user);
 		return $encoder->encodePassword($plainPassword, $user->getSalt());
 	}
 
@@ -69,10 +71,14 @@ class SessionController extends Controller
 	 * @Template()
 	 */
 	public function registerAction(Request $request){
-		//return $this->redirect($this->generateUrl('login'));
 		$url = $this->generateUrl('homepage');
 		if($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')){
 			return new \Symfony\Component\HttpFoundation\RedirectResponse($url);
+		}
+
+		$sampleEmails = [];
+		for($i=1;$i<=10;$i++){
+			array_push($sampleEmails, 'user'.$i.'@example.com');
 		}
 
 		$defaultUser = new User();
@@ -85,27 +91,26 @@ class SessionController extends Controller
 			$form->handleRequest($request);
 			if($form->isValid()){
 				$user = $form->getData();
-				$user->setPassword($this->encodePassword($user, $user->getPlainPassword()));
+				$encoder = $this->get('security.password_encoder');
+				$password = $encoder->encodePassword($user, $user->getPlainPassword());
+				$user->setPassword($password);
 				$user->setRegistrationKey();
 				$user->setRoles(array('ROLE_USER'));
 				$em = $this->getDoctrine()->getManager();
 				$email = $user->getEmail();
-				if(in_array($email, array(
-					'user1@example.com',
-					'user2@example.com',
-					'user3@example.com',
-				))){
+
+				if(in_array($email, $sampleEmails)){
 					$message = "Congratulations! You're registered. You can log into your account.";
 					$user->setIsActive(true);
 					$em->persist($user);
 					$em->flush();
-					$request->getSession()->getFlashBag()->add('registrationSuccess', $message);
+					$request->getSession()->getFlashBag()->add('event', $message);
 					return $this->redirect($url);
 				}else{
 					$em->persist($user);
 					$em->flush();
 //					$message = $this->sendActivationEmailAction($user->getEmail());
-					$request->getSession()->getFlashBag()->add('registrationSuccess', "Follow the instructions sent to your email address.");
+					$request->getSession()->getFlashBag()->add('event', "Follow the instructions sent to your email address.");
 					return $this->redirect($url);
 				}
 			}
@@ -146,6 +151,24 @@ class SessionController extends Controller
 			$displayMessage = "Oops! Sorry, we couldn't find any user associated with the given email.";
 		}
 		return $displayMessage;
+	}
+
+	/**
+	 * @Route("/admin/grant-admin", name="admin_grant_admin")
+	 */
+	public function grantAdmin(Request $request){
+		$flag = false;
+		$role = 'ROLE_ADMIN';
+		$em = $this->getDoctrine()->getManager();
+		/** @var \UserBundle\Entity\User $user */
+//		$user = $em->getRepository('QuotesBundle:User')->findOneBy(array('id' => $userId));
+		$user = $this->get('security.token_storage')->getToken()->getUser();
+		$user->setRoles(array($role));
+		$em->persist($user);
+		$em->flush();
+		$flag = true;
+		echo "Granted Admin privilege";
+		die;
 	}
 
 }
