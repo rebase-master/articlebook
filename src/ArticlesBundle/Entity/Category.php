@@ -4,11 +4,13 @@ namespace ArticlesBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Category
  *
  * @ORM\Table(name="category")
+ * @UniqueEntity(fields="name", message="Name already exists!")
  * @ORM\Entity(repositoryClass="ArticlesBundle\Repository\CategoryRepository")
  */
 class Category

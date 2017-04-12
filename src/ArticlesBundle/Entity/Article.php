@@ -94,13 +94,13 @@ class Article
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="articles", fetch="EAGER")
-	 * @ORM\JoinColumn(name="userId", referencedColumnName="id")
+	 * @ORM\JoinColumn(name="userId", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $user;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="ArticlesBundle\Entity\Category", fetch="EAGER")
-	 * @ORM\JoinColumn(name="categoryId", referencedColumnName="id")
+	 * @ORM\JoinColumn(name="categoryId", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $category;
 

@@ -1,7 +1,17 @@
 articles:
-    resource: "@ArticlesBundle/Controller/"
+    resource: "@ArticlesBundle/Controller/ArticleController.php"
     type:     annotation
     prefix:   articles/
+
+tags:
+    resource: "@ArticlesBundle/Controller/TagController.php"
+    type:     annotation
+    prefix:   admin/tags/
+
+category:
+    resource: "@ArticlesBundle/Controller/CategoryController.php"
+    type:     annotation
+    prefix:   admin/category/
 
 users:
     resource: "@UserBundle/Controller/UserController.php"

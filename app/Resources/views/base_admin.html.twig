@@ -69,7 +69,7 @@
                                     <ul class="dropdown-menu">
                                         {% if is_granted('ROLE_ADMIN') %}
                                             <li class="separator"></li>
-                                            <li><a href="{{ path('admin') }}">Admin Section</a></li>
+                                            <li><a href="{{ path('admin_index') }}">Admin Section</a></li>
                                         {% endif %}
                                         <li><a href="{{ path('user_profile', {'username' : username}) }}" title="Profile Page">
                                                 Profile
@@ -98,7 +98,7 @@
 
             <div id="main">
                 {% if app.session.flashBag.has('event') %}
-                    <div class="alert alert-info text-center">
+                    <div class="alert bg-primary text-center">
                         {% for msg in app.session.flashBag.get('event')  %}
                             {{ msg }}
                         {% endfor %}

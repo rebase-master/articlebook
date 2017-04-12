@@ -7,13 +7,20 @@
 
             <div class="col-sm-3 col-md-2" id="sidebar">
                 <ul class="list-group">
-                    <li class="list-group-item {{ activeCategory == 'users'?'active':'' }}"><a href="#">Users</a></li>
-                    <li class="list-group-item {{ activeCategory == 'tags'?'active':'' }}"><a href="#">Tags</a></li>
-                    <li class="list-group-item {{ activeCategory == 'category'?'active':'' }}"><a href="#">Categories</a></li>
+                    <li class="list-group-item {{ activeCategory == 'users'?'active':'' }}">
+                        <a href="{{ path('admin_index') }}">Users</a>
+                    </li>
+                    <li class="list-group-item {{ activeCategory == 'tags'?'active':'' }}">
+                        <a href="{{ path('admin_tags_index') }}">Tags</a>
+                    </li>
+                    <li class="list-group-item {{ activeCategory == 'category'?'active':'' }}">
+                        <a href="{{ path('admin_category_index') }}">Categories</a>
+                    </li>
                 </ul>
             </div>
             <div class="col-sm-9 col-md-10" id="content">
-                <h2>{{ users|length }} users found!</h2>
+                <h2>{{ users|length }} user(s) found!</h2>
+                <hr />
                 <div id="users-list">
                     <table class="table table-striped">
                         <thead>
@@ -60,24 +67,24 @@
                                     <td>{{ user.createdAt|date('m/d/Y H:i') }}</td>
                                     <td>
                                         {% if user.isActive %}
-                                            <span onclick="activateUser(user.id, -1)" class="btn btn-sm btn-primary">Deactivate</span>
+                                            <button onclick="activateUser(this, {{ user.id }}, -1)" class="btn btn-sm btn-primary">Deactivate</button>
                                         {% else %}
-                                            <span onclick="activateUser(user.id, 1)" class="btn btn-sm btn-primary">Activate</span>
+                                            <button onclick="activateUser(this, {{ user.id }}, 1)" class="btn btn-sm btn-primary">Activate</button>
                                         {% endif %}
 
                                         {% if 'ROLE_ADMIN' in user.roles %}
-                                            <span onclick="makeAdmin(user.id, -1)" class="btn btn-sm btn-success">Remove as Admin</span>
+                                            <button onclick="makeAdmin(this, {{ user.id }}, -1)" class="btn btn-sm btn-success">Remove as Admin</button>
                                         {% else %}
-                                            <span onclick="makeAdmin(user.id, 1)" class="btn btn-sm btn-success">Make Admin</span>
+                                            <button onclick="makeAdmin(this, {{ user.id }}, 1)" class="btn btn-sm btn-success">Make Admin</button>
                                         {% endif %}
 
                                         {% if user.isBlocked %}
-                                            <span onclick="blockUser(user.id, -1)" class="btn btn-sm btn-warning">Unblock</span>
+                                            <button onclick="blockUser(this, {{ user.id }}, -1)" class="btn btn-sm btn-warning">Unblock</button>
                                         {% else %}
-                                            <span onclick="blockUser(user.id, 1)" class="btn btn-sm btn-warning">Block</span>
+                                            <button onclick="blockUser(this, {{ user.id }}, 1)" class="btn btn-sm btn-warning">Block</button>
                                         {% endif %}
 
-                                        <a href="{{ path('user_delete', {id: user.id}) }}" class="btn btn-sm btn-danger">Delete</a>
+                                        <a href="{{ path('user_delete_confirm', {id: user.id}) }}" class="btn btn-sm btn-danger">Delete</a>
                                     </td>
                                 </tr>
                             {% endfor %}

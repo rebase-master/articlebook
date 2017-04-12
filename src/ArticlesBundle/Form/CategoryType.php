@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class TagType extends AbstractType
+class CategoryType extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -22,7 +22,7 @@ class TagType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ArticlesBundle\Entity\Tag'
+            'data_class' => 'ArticlesBundle\Entity\Category'
         ));
     }
 
@@ -31,7 +31,7 @@ class TagType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'articlesbundle_tag';
+        return 'articlesbundle_category';
     }
 
 

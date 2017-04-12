@@ -3,7 +3,7 @@ body{
 }
 a, a:focus, a:visited{
     outline: none;
-    color: #c9b029;
+    color: #ffffff;
 }
 
 #main{
@@ -31,8 +31,13 @@ a, a:focus, a:visited{
     font-size: 14px;
 }
 
+#header .text-right a.dropdown-toggle:hover, #header .text-right a.dropdown-toggle:focus,#header .text-right a.dropdown-toggle:active{
+    background-color: #009688;
+    color: #fff;
+}
 #header .text-right a.dropdown-toggle{
-    color: #ffffff;
+    color: #555;
+    font-size: 16px;
 }
 #admin .table td:last-child, #admin .table th:last-child{
     text-align: center;
@@ -40,10 +45,15 @@ a, a:focus, a:visited{
 #admin .table, #admin .table tr td, #admin .table tr th{
     /*border-color: #fff;*/
 }
+#admin #content {
+    background-color: #f9f9f9;
+    padding: 20px 30px;
+    border-radius: 4px;
+}
 #admin #sidebar{
-    margin-top: 25px;
 }
 #admin #sidebar .list-group-item a{
+    color: #c9b029;
     display: block;
     text-decoration: none;
 }
@@ -58,4 +68,14 @@ a, a:focus, a:visited{
 }
 #admin h2{
     color: #107d72;
+    margin-top: 0;
+}
+
+.addForm {
+    background-color: #fff;
+    max-width: 500px;
+    margin: auto;
+    padding: 20px 30px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }

@@ -20,12 +20,12 @@
             </div>
             <div class="col-sm-9 col-md-10" id="content">
                 <div class="clearfix">
-                    <h2 class="pull-left">{{ tags|length }} tag(s) found!</h2>
-                    <a class="btn btn-warning pull-right" href="{{ path('admin_tags_new') }}">Create a new tag</a>
+                    <h2 class="pull-left">{{ categories|length }} category found!</h2>
+                    <a class="btn btn-warning pull-right" href="{{ path('admin_category_new') }}">Create a new category</a>
                 </div>
                 <hr />
-                <div id="tags-list">
-                    <table class="table table-striped table-bordered">
+                <div id="category-list">
+                    <table class="table table-striped">
                         <thead>
                         <tr>
                             <th>#</th>
@@ -34,12 +34,12 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for index, tag in tags %}
+                        {% for index, category in categories %}
                             <tr>
                                 <td>{{ index+1 }}</td>
-                                <td>{{ tag.name }}</td>
+                                <td>{{ category.name }}</td>
                                 <td>
-                                    <a href="{{ path('tag_delete_confirm', {id: tag.id}) }}" class="btn btn-sm btn-danger">Delete</a>
+                                    <a href="{{ path('category_delete_confirm', {id: category.id}) }}" class="btn btn-sm btn-danger">Delete</a>
                                 </td>
                             </tr>
                         {% endfor %}

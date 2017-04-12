@@ -1,0 +1,20 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block body %}
+    <div class="addForm">
+        <h1>Create New Category</h1>
+        <hr/>
+        {{ form_start(form) }}
+            {#{{ form_widget(form) }}#}
+            <div class="form-group">
+                {{ form_label(form.name, 'Name') }}
+                {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+        <div class="clearfix">
+            <input type="submit" class="btn btn-primary pull-left" value="Create" />
+            <a class="btn btn-success pull-right" href="{{ path('admin_category_index') }}">Back to the list</a>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

@@ -1,16 +1,19 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_admin.html.twig' %}
 
 {% block body %}
-    <h1>Tag creation</h1>
+    <div class="addForm">
+        <h1>Create New Tag</h1>
+        <hr/>
+        {{ form_start(form) }}
+        <div class="form-group">
+            {{ form_label(form.name, 'Name') }}
+            {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+        </div>
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <input type="submit" value="Create" />
-    {{ form_end(form) }}
-
-    <ul>
-        <li>
-            <a href="{{ path('admin_tags_index') }}">Back to the list</a>
-        </li>
-    </ul>
+        <div class="clearfix">
+            <input type="submit" class="btn btn-primary pull-left" value="Create" />
+            <a class="btn btn-success pull-right" href="{{ path('admin_tags_index') }}">Back to the list</a>
+        </div>
+        {{ form_end(form) }}
+    </div>
 {% endblock %}

@@ -10,7 +10,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component
 /**
  * Tag controller.
  *
- * @Route("admin/tags")
  */
 class TagController extends Controller
 {
@@ -28,6 +27,7 @@ class TagController extends Controller
 
         return $this->render('tag/index.html.twig', array(
             'tags' => $tags,
+	        'activeCategory' => 'tags',
         ));
     }
 
@@ -47,7 +47,7 @@ class TagController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($tag);
             $em->flush();
-
+	        $request->getSession()->getFlashBag()->add('event', "Record created successfully.");
             return $this->redirectToRoute('admin_tags_show', array('id' => $tag->getId()));
         }
 
@@ -98,7 +98,23 @@ class TagController extends Controller
         ));
     }
 
-    /**
+
+	/**
+	 * Displays a form to edit an existing tag entity.
+	 *
+	 * @Route("/admin/tags/{id}/delete", name="tag_delete_confirm")
+	 * @Method({"GET", "POST"})
+	 */
+	public function deleteConfirmAction(Request $request, Tag $tag)
+	{
+		$deleteForm = $this->createDeleteForm($tag);
+
+		return $this->render('tag/delete-confirm.html.twig', array(
+			'tag' => $tag,
+			'delete_form' => $deleteForm->createView(),
+		));
+	}
+	/**
      * Deletes a tag entity.
      *
      * @Route("/{id}", name="admin_tags_delete")

@@ -11,24 +11,23 @@
                 <div class="alert-message-success">{{ message }}</div>
             {% endif %}
             <form id="register-form" class="clearfix" action="{{ path('register') }}" method="POST">
-                <div class="register-container span6">
-                    <section class="error" style="display:block;">{{ form_errors(form) }}</section>
-                    <div class="control-group">{{ form_label(form.firstName, 'First Name') }}
+                <div class="clearfix">
+                    <div class="form-group">{{ form_label(form.firstName, 'First Name') }}
                         <div class="controls">{{ form_widget(form.firstName) }}</div>
                     </div>
-                    <div class="control-group">{{ form_label(form.lastName, 'Last Name') }}
+                    <div class="form-group">{{ form_label(form.lastName, 'Last Name') }}
                         <div class="controls">{{ form_widget(form.lastName) }}</div>
                     </div>
-                    <div class="control-group">{{ form_label(form.username) }}
+                    <div class="form-group">{{ form_label(form.username) }}
                         <div class="controls">{{ form_widget(form.username) }}</div>
                     </div>
-                    <div class="control-group">{{ form_label(form.email) }}
+                    <div class="form-group">{{ form_label(form.email) }}
                         <div class="controls">{{ form_widget(form.email) }}</div>
                     </div>
-                    <div class="control-group">{{ form_label(form.plainPassword, 'Password') }}
+                    <div class="form-group">{{ form_label(form.plainPassword, 'Password') }}
                         <div class="controls">{{ form_widget(form.plainPassword.first) }}</div>
                     </div>
-                    <div class="control-group">{{ form_label(form.plainPassword, 'Confirm Password') }}
+                    <div class="form-group">{{ form_label(form.plainPassword, 'Confirm Password') }}
                         <div class="controls">{{ form_widget(form.plainPassword.second) }}</div>
                     </div>
                     <br />
