@@ -38,6 +38,18 @@ class Tag
 		$this->articles = new ArrayCollection();
 	}
 
+	/**
+	 * @param Article $article
+	 */
+	public function addArticle(Article $article)
+	{
+		if ($this->articles->contains($article)) {
+			return;
+		}
+		$this->articles->add($article);
+		$article->addTag($this);
+	}
+
     /**
      * Get id
      *

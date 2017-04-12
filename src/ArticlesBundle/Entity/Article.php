@@ -110,6 +110,18 @@ class Article
 	}
 
 	/**
+	 * @param Tag $tag
+	 */
+	public function addTag(Tag $tag)
+	{
+		if ($this->tags->contains($tag)) {
+			return;
+		}
+		$this->tags->add($tag);
+		$tag->addArticle($this);
+	}
+
+	/**
      * Get id
      *
      * @return int

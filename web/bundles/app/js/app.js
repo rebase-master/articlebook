@@ -17,6 +17,7 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
     "use strict";
 
     $scope.articleLink = '';
+    //$scope.articleCategory = 'Choose Category';
     $scope.atags = [];
 
     $scope.addTags = function (event) {
@@ -26,6 +27,7 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
         if(key == 13){
             console.log("value: "+$(target).val());
             $scope.atags.push({name: $(target).val()});
+            console.log("value: "+$scope.atags);
             $(target).val('');
         }
     }//addTag()
@@ -49,8 +51,11 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
         console.log("clicked");
         console.log($scope.articleLink);
         var url = baseUrl+'articles/new';
-        if($scope.articleLink != '')
-            saveArticle(url, $scope.articleLink);
+        console.log($scope.articleLink);
+        console.log($scope.articleCategory);
+        console.log($scope.atags);
+        if($scope.articleLink != '' && $scope.articleCategory != '')
+            saveArticle(url);
     };
 
     function saveArticle(url, val) {
@@ -60,7 +65,7 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
             method: 'POST',
             url: url,
             cache: false,
-            params: {link: val}
+            params: {link: $scope.articleLink, tags: JSON.stringify($scope.atags), category: $scope.articleCategory}
         }).success(function(response) {
             NProgress.done();
 

@@ -32,8 +32,25 @@
                             </div>
 
                             <div class="clearfix">
-                                <button class="btn btn-info btn-md pull-right" type="submit" ng-disabled="caForm.$invalid">
-                                    <span class="glyphicon glyphicon-plus"></span>Add Article
+                                <div class="categories pull-left">
+                                    <label for="article-category" class="sr-only">Choose Category</label>
+                                    <div class="form-group">
+                                        <select
+                                                class="form-control"
+                                                name="category"
+                                                id="article-category"
+                                                ng-required="true"
+                                                ng-model="articleCategory"
+                                                >
+                                            <option value="" disabled="disabled" selected="selected">Choose Category</option>
+                                            {% for category in categories %}
+                                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <button class="btn btn-info btn-md pull-right" type="submit" ng-disabled="  caForm.$invalid">
+                                    <span class="glyphicon glyphicon-plus"></span>&nbsp;Add Article
                                 </button>
                             </div>
                         </div>

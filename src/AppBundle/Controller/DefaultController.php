@@ -20,11 +20,12 @@ class DefaultController extends Controller
 	    }
 	    $user = $this->get('security.token_storage')->getToken()->getUser();
 
-	    $articles = $this->getDoctrine()->getRepository('ArticlesBundle:Article')->findAll();
-//	    var_dump($articles);
-//	    die;
+	    $articles   = $this->getDoctrine()->getRepository('ArticlesBundle:Article')->findAll();
+	    $categories = $this->getDoctrine()->getRepository('ArticlesBundle:Category')->findAll();
+
 	    return array(
-		    'articles' => $articles
+		    'articles' => $articles,
+		    'categories' => $categories
 	    );
     }
 

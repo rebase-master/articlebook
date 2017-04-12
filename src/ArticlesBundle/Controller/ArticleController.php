@@ -3,6 +3,7 @@
 namespace ArticlesBundle\Controller;
 
 use ArticlesBundle\Entity\Article;
+use ArticlesBundle\Entity\Tag;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -28,10 +29,13 @@ class ArticleController extends Controller
     {
 	    if($request->isXmlHttpRequest()){
 		    $link = $request->get('link');
-		    $tags = $this->getMetaTags($link);
+		    $articleTags = json_decode($request->get('tags'));
+		    $articleCategory = $request->get('category');
+
+		    $metaTags = $this->getMetaTags($link);
 		    $user = $this->get('security.token_storage')->getToken()->getUser();
 
-		    if($tags['title'] == '' || $tags['image'] == '' || $tags['description'] == ''){
+		    if($metaTags['title'] == '' || $metaTags['image'] == '' || $metaTags['description'] == ''){
 			    $response = array(
 				    'status' => 'ERROR',
 				    'code'   => -1,
@@ -43,15 +47,28 @@ class ArticleController extends Controller
 
 			    $serializer = new Serializer($normalizers, $encoders);
 			    $em = $this->getDoctrine()->getManager();
-			    $category = $this->getDoctrine()->getRepository('ArticlesBundle:Category')->findOneBy(array('name' => 'technology'));
+			    $category = $this->getDoctrine()->getRepository('ArticlesBundle:Category')->findOneBy(array('id' => $articleCategory));
 			    $article = new Article();
-			    $article->setTitle($tags['title']);
-			    $article->setImageUrl($tags['image']);
-			    $article->setDescription($tags['description']);
+			    $article->setTitle($metaTags['title']);
+			    $article->setImageUrl($metaTags['image']);
+			    $article->setDescription($metaTags['description']);
 			    $article->setLink($link);
 			    $article->setDomain(parse_url($link)['host']);
 			    $article->setCategory($category);
 			    $article->setUser($user);
+
+			    foreach ($articleTags as $tag) {
+				    $Tag = $this->getDoctrine()->getRepository('ArticlesBundle:Tag')->findOneBy(array('name' => $tag->name));
+
+				    if(!$Tag){
+					    $Tag = new Tag();
+					    $Tag->setName($tag->name);
+					    $em->persist($Tag);
+					    $em->flush();
+				    }
+				    $article->addTag($Tag);
+			    }
+
 
 			    $em->persist($article);
 			    $em->flush();
