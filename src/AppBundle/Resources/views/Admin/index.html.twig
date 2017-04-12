@@ -77,7 +77,7 @@
                                             <span onclick="blockUser(user.id, 1)" class="btn btn-sm btn-warning">Block</span>
                                         {% endif %}
 
-                                        <span onclick="deleteUser(user.id)" class="btn btn-sm btn-danger">Delete</span>
+                                        <a href="{{ path('user_delete', {id: user.id}) }}" class="btn btn-sm btn-danger">Delete</a>
                                     </td>
                                 </tr>
                             {% endfor %}

@@ -75,7 +75,7 @@
                                     <ul class="dropdown-menu">
                                         {% if is_granted('ROLE_ADMIN') %}
                                             <li class="separator"></li>
-                                            <li><a href="{{ path('admin') }}">Admin Section</a></li>
+                                            <li><a href="{{ path('admin_index') }}">Admin Section</a></li>
                                         {% endif %}
                                         <li><a href="{{ path('user_profile', {'username' : username}) }}" title="Profile Page">
                                                 Profile
