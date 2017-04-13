@@ -12,7 +12,7 @@ var ahApp = angular
     ;
 
 var appControllers = angular.module('appControllers', []);
-appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http', '$routeParams', '$location',  function($scope, $rootScope, $http, $routeParams, $location) {
+appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http', '$routeParams', '$location', '$compile', function($scope, $rootScope, $http, $routeParams, $location, $compile) {
 
     "use strict";
 
@@ -21,6 +21,42 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
     $scope.articles = null;
 
     loadArticles();
+
+    $scope.like = function (event, articleId, mode) {
+
+        var url, likeText,
+            target = event.currentTarget,
+            lctrCont = $(target).closest('.interaction').find('.lctr'),
+            lctr     = parseInt(lctrCont.text())
+
+            ;
+        console.log(mode);
+        mode= parseInt(mode);
+
+        if(mode == -1){
+            url = baseUrl+'articles/'+articleId+'/unlike';
+            likeText = 'Like';
+        }else{
+            url = baseUrl+'articles/'+articleId+'/like';
+            likeText = 'Unlike';
+        }
+
+        $http({
+            method: 'POST',
+            url: url,
+            cache: false
+        }).success(function(response){
+            $(target).parent().empty().append(
+                $compile(
+                    "<button ng-click='like($event,"+articleId+","+(mode*-1)+")' class='btn btn-xs btn-primary'><span class='glyphicon glyphicon-thumbs-up'></span> <span class='likeText'>"+likeText+"</span></button>"
+                )($scope)
+            );
+            //$scope.apply();
+            //$(target).parent().html('<button ng-click="like($event, '+articleId+', '+(mode*-1)+')" class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-thumbs-up"></span> <span class="likeText">'+likeText+'</span></button>');
+        }).error(function (response) {
+           alert("Something went wrong.");
+        });
+    };
 
     $scope.addTags = function (event) {
         var key = event.keyCode || event.which,

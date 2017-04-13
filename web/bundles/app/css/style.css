@@ -100,23 +100,42 @@ textarea{
     margin-bottom: 30px;
 }
 .posts-group .post .info {
-    padding: 0 10px 10px;
+    padding: 0 10px 0;
     border-top: 1px solid #ddd;
     margin: 0 20px;
 }
 .posts-group .post .info h3{
     color: #4a4a4a;
+    font-size: 20px;
 }
 .posts-group .post .info p{
     color: #888888;
+    font-size: 12px;
+}
+.posts-group .interaction {
+    padding: 0 20px 10px;
+    text-align: right;
 }
 .posts-group .posts {
     padding: 20px 50px;
 }
 .posts-group .link-group a {
+    display: block;
     text-decoration: none;
 }
-
+.posts-group ._ltop {
+    padding: 10px 15px 0;
+    border-bottom: 1px solid #eee;
+}
+.posts-group ._ltop a {
+    font-size: 16px;
+    font-weight: 700;
+}
+.posts-group ._ltop p{
+    color: #999;
+    font-size: 12px;
+    font-style: italic;
+}
 .posts-group .link-group img {
     max-height: 310px;
     width: 100%;

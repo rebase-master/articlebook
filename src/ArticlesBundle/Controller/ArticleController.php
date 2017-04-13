@@ -3,7 +3,9 @@
 namespace ArticlesBundle\Controller;
 
 use ArticlesBundle\Entity\Article;
+use ArticlesBundle\Entity\Likes;
 use ArticlesBundle\Entity\Tag;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -111,22 +113,23 @@ class ArticleController extends Controller
 	 * @return mixed
 	 */
 	private function prepareArticlesForApi($articles){
-		/**
-		 * @var \ArticlesBundle\Entity\Article $article
-		 */
 		$result = [];
 		$ctr = 0;
 		foreach ($articles as $article) {
+			/**
+			 * @var \ArticlesBundle\Entity\Article $article
+			 */
 
 			$result[$ctr]['id']          = $article->getId();
-			$result[$ctr]['username']    = $article->getUser()->getUsername();
+			$result[$ctr]['username']    = $article->getUser()->getFirstName()." ".$article->getUser()->getLastName();
+			$result[$ctr]['userProfileLink']    = $this->generateUrl('user_profile', array('username' => $article->getUser()->getUsername()));
 			$result[$ctr]['title']       = $article->getTitle();
 			$result[$ctr]['imageUrl']    = $article->getImageUrl();
 			$result[$ctr]['link']        = $article->getLink();
 			$result[$ctr]['description'] = $article->getDescription();
 			$result[$ctr]['domain']      = $article->getDomain();
 			$result[$ctr]['category']    = $article->getCategory()->getName();
-			$result[$ctr]['createdAt']   = $article->getCreatedAt();
+			$result[$ctr]['createdAt']   = $article->getCreatedAt()->format('Y-m-d H:i:s');
 
 //			$articleComments = $this->getRepository('ArticleComments')->getArticleCommentsWithUserInfo($articles[$i]['id']);
 //			$comments = array();
@@ -159,6 +162,88 @@ class ArticleController extends Controller
         return $this->render('article/show.html.twig', array(
             'article' => $article,
         ));
+    }
+
+	/**
+     * Add Like to Article
+     *
+     * @Route("/{id}/like", name="article_post_like")
+     * @Method("POST")
+     */
+    public function likeAction(Article $article, Request $request)
+    {
+		if($request->isXmlHttpRequest() && $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+
+		    $user = $this->get('security.token_storage')->getToken()->getUser();
+
+		    if(!empty($article)){
+
+			    $em = $this->getDoctrine()->getManager();
+			    $Like = new Likes();
+			    $Like->setUser($user);
+			    $Like->setArticle($article);
+			    $em->persist($Like);
+
+			    try{
+				    $em->flush();
+				    $responseData = array('code' => 1, 'status' => 'OK');
+			    }catch (Exception $e){
+				    $responseData = array('code' => -1, 'status' => 'ERROR');
+			    }
+
+		    }else{
+			    $responseData = array('code' => -1, 'status' => 'ERROR');
+		    }
+	    }else{
+		    $responseData = array('code' => -2, 'status' => 'ERROR');
+	    }
+	    return new JsonResponse( $responseData );
+
+    }
+
+	/**
+     * Remove Like from Article
+     *
+     * @Route("/{id}/unlike", name="article_post_unlike")
+     * @Method("POST")
+     */
+    public function unlikeAction(Article $article, Request $request)
+    {
+	    if($request->isXmlHttpRequest() && $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+
+		    /** @var \UserBundle\Entity\User $user */
+		    $user = $this->get('security.token_storage')->getToken()->getUser();
+
+		    if(!empty($article)){
+
+			    $em = $this->getDoctrine()->getManager();
+			    $Like = $this->getDoctrine()->getRepository('ArticlesBundle:Likes')
+				    ->findOneBy(
+					    array(
+						    'article' => $article->getId(),
+						    'user'    => $user->getId()
+					    )
+				    );
+
+			    if($Like){
+				    try{
+					    $em->remove($Like);
+					    $em->flush();
+					    $responseData = array('code' => 1, 'status' => 'OK');
+				    }catch (Exception $e){
+					    $responseData = array('code' => -1, 'status' => 'ERROR');
+				    }
+			    }else{
+				    $responseData = array('code' => -1, 'status' => 'ERROR');
+			    }
+
+		    }else{
+			    $responseData = array('code' => -1, 'status' => 'ERROR');
+		    }
+	    }else{
+		    $responseData = array('code' => -2, 'status' => 'ERROR');
+	    }
+	    return new JsonResponse( $responseData );
     }
 
     /**

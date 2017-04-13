@@ -66,6 +66,10 @@
                     <div class="post" ng-repeat="article in articles track by $index">
 
                         <div class="link-group">
+                            <div class="_ltop clearfix">
+                                <a class="text-primary pull-left" ng-href="{[ article.userProfileLink ]}">{[ article.username ]}</a>
+                                <p class="pull-right text-muted">{[ article.createdAt | timeAgo ]}</p>
+                            </div>
                             <a ng-href="{[ article.link ]}" target="_blank">
                                 <img ng-src="{[ article.imageUrl ]}" alt="Article Photo"/>
                                 <div class="info">
@@ -74,36 +78,20 @@
                                 </div>
                             </a>
                         </div>{#link-group#}
-                        <div class="interaction">
-                            <ul>
-                                <li><a href="">Like</a></li>
-                                <li><a href="">Share</a></li>
-                            </ul>
+                        <div class="interaction clearfix">
+                            <div class="likec pull-left">
+                                <button ng-click="like($event, article.id, 1)" class="btn btn-xs btn-primary">
+                                    <span class="glyphicon glyphicon-thumbs-up"></span>
+                                    <span class="likeText">Like</span>
+                                </button>
+                            </div>
+                            <div class="metrics pull-right">
+                                <span class="lctr">12</span> Likes
+                                <span class="cctr">5</span> Comments
+                            </div>
                         </div>
 
                     </div>{#post#}
-
-                    {#{% for article in articles %}#}
-                        {#<div class="post">#}
-
-                            {#<div class="link-group">#}
-                                {#<a href="{{ article.link }}" target="_blank">#}
-                                    {#<img src="{{ article.imageUrl }}" alt="Article Photo"/>#}
-                                    {#<div class="info">#}
-                                        {#<h3>{{ article.title }}</h3>#}
-                                        {#<p>{{ article.description }}</p>#}
-                                    {#</div>#}
-                                {#</a>#}
-                            {#</div>&#123;&#35;link-group&#35;&#125;#}
-                            {#<div class="interaction">#}
-                                {#<ul>#}
-                                    {#<li><a href="">Like</a></li>#}
-                                    {#<li><a href="">Share</a></li>#}
-                                {#</ul>#}
-                            {#</div>#}
-
-                        {#</div>&#123;&#35;post&#35;&#125;#}
-                    {#{% endfor %}#}
 
                 </div><!-- posts -->
 

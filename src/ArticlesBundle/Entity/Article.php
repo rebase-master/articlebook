@@ -104,9 +104,44 @@ class Article
 	 */
 	protected $category;
 
+	/**
+	 * @ORM\OneToMany(targetEntity="ArticlesBundle\Entity\Comment", mappedBy="article", fetch="EAGER")
+	 * @ORM\JoinColumn(name="commentId", referencedColumnName="id", onDelete="CASCADE")
+	 */
+	private $comments;
 
-	public function __construct(){
-		$this->tags         =    new ArrayCollection();
+	/**
+	 * @ORM\OneToMany(targetEntity="ArticlesBundle\Entity\Likes", mappedBy="article", fetch="EAGER")
+	 * @ORM\JoinColumn(name="likesId", referencedColumnName="id", "onDelete="CASCADE")
+	 */
+	private $likes;
+
+
+	public function __construct()
+	{
+		$this->tags     = new ArrayCollection();
+		$this->comments = new ArrayCollection();
+		$this->likes    = new ArrayCollection();
+	}
+
+	public function getComments()
+	{
+		return $this->comments;
+	}
+
+	public function setComments(ArrayCollection $comments)
+	{
+		$this->comments = $comments;
+	}
+
+	public function getLikes()
+	{
+		return $this->likes;
+	}
+
+	public function setLikes(ArrayCollection $likes)
+	{
+		$this->likes = $likes;
 	}
 
 	/**
