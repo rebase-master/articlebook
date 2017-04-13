@@ -4,6 +4,8 @@ namespace ArticlesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use UserBundle\Entity\User;
+use Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Comment
@@ -29,11 +31,12 @@ class Comment
      */
     private $comment;
 
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="createdAt", type="datetime")
-     */
+	/**
+	 * @var \Datetime $createdAt
+	 *
+	 * @Gedmo\Timestampable(on="create")
+	 * @ORM\Column(name="createdAt", type="datetime")
+	 */
     private $createdAt;
 
 	/**

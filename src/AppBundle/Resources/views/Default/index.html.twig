@@ -49,7 +49,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <button class="btn btn-info btn-md pull-right" type="submit" ng-disabled="  caForm.$invalid">
+                                <button class="btn btn-warning btn-md pull-right" type="submit" ng-disabled="  caForm.$invalid">
                                     <span class="glyphicon glyphicon-plus"></span>&nbsp;Add Article
                                 </button>
                             </div>
@@ -78,17 +78,56 @@
                                 </div>
                             </a>
                         </div>{#link-group#}
+                        <div class="tags-group">
+                            <div class="list" ng-if="article.tags">
+                                <span class="label" ng-repeat="tag in article.tags">
+                                    <span class="tag">#{[ tag.name ]}</span>
+                                </span>
+                            </div>
+                        </div>
                         <div class="interaction clearfix">
                             <div class="likec pull-left">
-                                <button ng-click="like($event, article.id, 1)" class="btn btn-xs btn-primary">
+                                <button ng-click="like($event, article.id, -1)" class="btn btn-xs btn-primary" ng-if="article.userLikes">
+                                    <span class="glyphicon glyphicon-thumbs-up"></span>
+                                    <span class="likeText">Unlike</span>
+                                </button>
+                                <button ng-click="like($event, article.id, 1)" class="btn btn-xs btn-primary" ng-if="!article.userLikes">
                                     <span class="glyphicon glyphicon-thumbs-up"></span>
                                     <span class="likeText">Like</span>
                                 </button>
                             </div>
                             <div class="metrics pull-right">
-                                <span class="lctr">12</span> Likes
-                                <span class="cctr">5</span> Comments
+                                <span class="lctr">{[ article.likeIds.length ]}</span> Likes
+                                <span class="cctr">{[ article.comments.length ]}</span> Comments
                             </div>
+                        </div>
+
+                        <div class="commentsbox">
+
+                            <div class="commentinput">
+                                <input type="text"
+                                       class="form-control"
+                                       id="usercomment"
+                                       placeholder="Write a comment..."
+                                       ng-model="articleComment"
+                                       ng-keypress="addComment($event, article.id)"
+                                />
+                            </div>{#commentinput#}
+
+                            <div class="comments">
+                                <div class="sqr" ng-repeat="comment in article.comments | limitTo: 10 | orderBy: comment.createdAt: true" ng-if="article.comments.length != 0">
+                                    <input type="hidden" class="cid" name="cid" value="{[ comment.id ]}" />
+                                    <div class="comment">
+                                        <a ng-href="{[ comment.userProfileLink ]}">
+                                            {[ comment.username ]}
+                                        </a>
+                                        <div class="text">
+                                            {[ comment.comment ]}
+                                        </div>
+                                        <span ng-if="uid == comment.userId" ng-click="removeComment($event, article.id, comment.id)" class="_rct remove pull-right glyphicon glyphicon-remove"></span>
+                                    </div><!-- comment -->
+                                </div><!-- sqr-->
+                            </div><!-- comments -->
                         </div>
 
                     </div>{#post#}

@@ -17,6 +17,7 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
     "use strict";
 
     $scope.articleLink = '';
+    $scope.articleComment ='';
     $scope.atags = [];
     $scope.articles = null;
 
@@ -111,6 +112,67 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
             url: url,
             cache: false,
             params: {link: $scope.articleLink, tags: JSON.stringify($scope.atags), category: $scope.articleCategory}
+        }).success(function(response) {
+            NProgress.done();
+        }).error(function (response) {
+            NProgress.done();
+        });
+    }
+
+    $scope.addComment = function (event, articleId) {
+
+        var url = baseUrl+'articles/'+articleId+'/comments/add',
+            key = event.keyCode || event.which,
+            target = event.target;
+
+        if(key == 13){
+            var comment = $(target).val().trim();
+            if(comment != ''){
+                //$(target).parent().next('.comments').prepend('my comment');
+                saveComment(url, comment, articleId, $(target));
+            }
+        }
+    };
+
+    function saveComment(url, comment, articleId, ele) {
+        NProgress.start();
+        $http({
+            method: 'POST',
+            url: url,
+            cache: false,
+            params: {comment: JSON.stringify(comment)}
+        }).success(function(response) {
+            NProgress.done();
+            ele.val('');
+            if(response.code == 1) {
+                ele.parent().next('.comments').prepend(
+                    $compile(
+                        "<div class='sqr'>" +
+                        "<input type='hidden' class='cid' name='cid' value='" + response.comment.id + "' />" +
+                        "<div class='comment'>" +
+                        "<a ng-href='" + response.comment.userProfileLink + "'>" + response.comment.username +
+                        "</a>" +
+                        "<div class='text'>" + response.comment.comment + "</div>" +
+                        "<span ng-if='" + uid + " == " + response.comment.userId + "' ng-click='removeComment($event, " + articleId + ", " + response.comment.id + ")' class='_rct remove pull-right glyphicon glyphicon-remove'></span>" +
+                        "</div>" +
+                        "</div>"
+                    )($scope)
+                );
+
+            }
+        }).error(function (response) {
+            NProgress.done();
+            alert("something went wrong.");
+        });
+    }
+
+    $scope.removeComment = function (event, articleId, commentId) {
+
+        var url = baseUrl+'articles/'+articleId+'/comments/delete/'+commentId;
+        $http({
+            method: 'DELETE',
+            url: url,
+            cache: false,
         }).success(function(response) {
             NProgress.done();
 

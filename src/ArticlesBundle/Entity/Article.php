@@ -112,7 +112,7 @@ class Article
 
 	/**
 	 * @ORM\OneToMany(targetEntity="ArticlesBundle\Entity\Likes", mappedBy="article", fetch="EAGER")
-	 * @ORM\JoinColumn(name="likesId", referencedColumnName="id", "onDelete="CASCADE")
+	 * @ORM\JoinColumn(name="likesId", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	private $likes;
 

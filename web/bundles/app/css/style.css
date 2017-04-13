@@ -1,5 +1,5 @@
 body{
-    background-color: #fafafa;
+    background-color: #fefefe;
 }
 a, a:focus, a:visited{
     outline: none;
@@ -53,11 +53,11 @@ textarea{
     /*border-top: 1px solid #ddd;*/
 }
 #homepage .postbox .postinfo .clearfix{
-    background-color: #eee;
+    background-color: #009688;
     padding: 10px 20px;
 }
 #homepage .postbox form {
-    border: 1px solid #eee;
+    border: 1px solid #ccc;
 }
 #homepage .postbox textarea {
     resize: none;
@@ -97,6 +97,7 @@ textarea{
 .posts-group .post {
     border: 1px solid #eee;
     background-color: #fff;
+    box-shadow: 1px 3px 4px #ddd;
     margin-bottom: 30px;
 }
 .posts-group .post .info {
@@ -115,6 +116,8 @@ textarea{
 .posts-group .interaction {
     padding: 0 20px 10px;
     text-align: right;
+    color: #555;
+    font-size: 13px;
 }
 .posts-group .posts {
     padding: 20px 50px;
@@ -145,3 +148,45 @@ textarea{
     text-align: center;
 }
 
+.comments{
+    border-top: 1px solid #f5f5f5;
+}
+.commentsbox {
+    border-top: 1px solid #eee;
+}
+.commentsbox .commentinput {
+    margin: 10px 20px;
+}
+.commentsbox .commentinput .form-control{
+    border-color: #eee;
+}
+.commentsbox .commentinput .form-control:focus{
+    outline: none;
+    box-shadow: none;
+}
+.comments .sqr {
+    background-color: #f9f9f9;
+    padding: 5px 10px 5px 20px;
+}
+.comments .comment ._rct{
+    opacity: 0;
+}
+.comments .comment a{
+    color: #2c948e;
+    font-weight: 600;
+}
+.comments .comment .text{
+    font-size: 95%;
+    margin-left: 3px;
+}
+.comments .comment a, .comments .comment div {
+    display: inline-block;
+}
+
+.post .tags-group {
+    margin: 0 20px 10px;
+}
+.post .tags-group .label{
+    color: #777;
+    font-size: 13px;
+}

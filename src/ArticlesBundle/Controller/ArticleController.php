@@ -3,6 +3,7 @@
 namespace ArticlesBundle\Controller;
 
 use ArticlesBundle\Entity\Article;
+use ArticlesBundle\Entity\Comment;
 use ArticlesBundle\Entity\Likes;
 use ArticlesBundle\Entity\Tag;
 use Exception;
@@ -100,6 +101,7 @@ class ArticleController extends Controller
         $articles = $this->getDoctrine()->getRepository('ArticlesBundle:Article')->findAll();
 
 	    $articles = $this->prepareArticlesForApi($articles);
+//	    exit;
 //	    var_dump($articles);
 //	    die;
         return new JsonResponse(array(
@@ -115,11 +117,15 @@ class ArticleController extends Controller
 	private function prepareArticlesForApi($articles){
 		$result = [];
 		$ctr = 0;
+		$user = $this->get('security.token_storage')->getToken()->getUser();
+
 		foreach ($articles as $article) {
 			/**
 			 * @var \ArticlesBundle\Entity\Article $article
+			 * @var \UserBundle\Entity\User $user
 			 */
-
+//			var_dump($article->getTags());
+//			die;
 			$result[$ctr]['id']          = $article->getId();
 			$result[$ctr]['username']    = $article->getUser()->getFirstName()." ".$article->getUser()->getLastName();
 			$result[$ctr]['userProfileLink']    = $this->generateUrl('user_profile', array('username' => $article->getUser()->getUsername()));
@@ -131,18 +137,36 @@ class ArticleController extends Controller
 			$result[$ctr]['category']    = $article->getCategory()->getName();
 			$result[$ctr]['createdAt']   = $article->getCreatedAt()->format('Y-m-d H:i:s');
 
-//			$articleComments = $this->getRepository('ArticleComments')->getArticleCommentsWithUserInfo($articles[$i]['id']);
-//			$comments = array();
-//			foreach ($articleComments as $key => $qc) {
-//				$comments[$key]['id'] = $qc['id'];
-//				$comments[$key]['userId'] = $qc['uid'];
-//				$comments[$key]['comment'] = $qc['comment'];
-//				$comments[$key]['username'] = $qc['username'];
-//			}
-//			$articles[$i]['comments'] = $comments;
+			$likeUserIds = [];
+			foreach ($article->getLikes() as $Like) {
+				/** @var \ArticlesBundle\Entity\Likes $Like */
+				array_push($likeUserIds, $Like->getUser()->getId());
+			}
 
-//			$quoteTags = $this->getDoctrine()->getRepository('Tag')->getQuoteTagsName($articles[$i]['id']);
-//			$articles[$i]['tags'] = $quoteTags;
+			$result[$ctr]['likeIds'] = $likeUserIds;
+			$result[$ctr]['userLikes'] = in_array($user->getId(),$likeUserIds);
+
+			$comments = array();
+			foreach ($article->getComments() as $key => $Comment) {
+				/** @var \ArticlesBundle\Entity\Comment $Comment */
+				$comments[$key]['id']       = $Comment->getId();
+				$comments[$key]['userId']   = $Comment->getUser()->getId();
+				$comments[$key]['comment']  = $Comment->getComment();
+				$comments[$key]['username'] = $Comment->getUser()->getUsername();
+				$comments[$key]['userProfileLink']    = $this->generateUrl('user_profile',
+													array('username' => $Comment->getUser()->getUsername()));
+			}
+
+			$tags = array();
+			foreach ($article->getTags() as $key => $Tag) {
+				/** @var \ArticlesBundle\Entity\Tag $Tag */
+				$tags[$key]['id']   = $Tag->getId();
+				$tags[$key]['name'] = $Tag->getName();
+			}
+
+			$result[$ctr]['comments'] = $comments;
+			$result[$ctr]['tags']     = $tags;
+
 			$ctr++;
 		}//for loop
 
@@ -246,7 +270,96 @@ class ArticleController extends Controller
 	    return new JsonResponse( $responseData );
     }
 
-    /**
+	/**
+     * Add comment to Article
+     *
+     * @Route("/{id}/comments/add", name="article_post_comment")
+     * @Method("POST")
+     */
+    public function addCommentAction(Article $article, Request $request)
+    {
+	    if($request->isXmlHttpRequest() && $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+
+		    /** @var \UserBundle\Entity\User $user */
+		    $user = $this->get('security.token_storage')->getToken()->getUser();
+		    $postComment = json_decode($request->get('comment'));
+
+		    if(!empty($article)){
+
+			    $em = $this->getDoctrine()->getManager();
+			    $Comment = new Comment();
+			    $Comment->setComment($postComment);
+			    $Comment->setUser($user);
+			    $Comment->setArticle($article);
+			    $em->persist($Comment);
+
+			    try{
+				    $em->flush();
+				    $responseData = array(
+					    'code' => 1,
+					    'status' => 'OK',
+					    'comment'   => array(
+						    'userProfileLink' => $this->generateUrl('user_profile', array('username' => $user->getUsername())),
+						    'comment' => $postComment,
+						    'username' => $user->getUsername(),
+						    'id'        => $Comment->getId(),
+						    'userId'    => $user->getId()
+					    )
+				    );
+			    }catch (Exception $e){
+				    $responseData = array('code' => -1, 'status' => 'ERROR');
+			    }
+
+		    }else{
+			    $responseData = array('code' => -1, 'status' => 'ERROR');
+		    }
+	    }else{
+		    $responseData = array('code' => -2, 'status' => 'ERROR');
+	    }
+	    return new JsonResponse( $responseData );
+    }
+
+	/**
+	 * Remove Comment from Article
+	 *
+	 * @Route("/{id}/comments/delete{commentId}", name="article_remove_comment")
+	 * @Method("DELETE")
+	 */
+	public function removeCommentAction(Article $article, Request $request, $commentId)
+	{
+		if($request->isXmlHttpRequest() && $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+
+			/** @var \UserBundle\Entity\User $user */
+			$user = $this->get('security.token_storage')->getToken()->getUser();
+
+			if(!empty($article)){
+
+				$em = $this->getDoctrine()->getManager();
+				$Comment = $this->getDoctrine()->getRepository('ArticlesBundle:Comment')
+								->findOneBy(array('id' => $commentId));
+
+				if($Comment){
+					try{
+						$em->remove($Comment);
+						$em->flush();
+						$responseData = array('code' => 1, 'status' => 'OK');
+					}catch (Exception $e){
+						$responseData = array('code' => -1, 'status' => 'ERROR');
+					}
+				}else{
+					$responseData = array('code' => -1, 'status' => 'ERROR');
+				}
+
+			}else{
+				$responseData = array('code' => -1, 'status' => 'ERROR');
+			}
+		}else{
+			$responseData = array('code' => -2, 'status' => 'ERROR');
+		}
+		return new JsonResponse( $responseData );
+	}
+
+	/**
      * Finds and displays a article entity.
      *
      * @Route("/fetch", name="article_show")

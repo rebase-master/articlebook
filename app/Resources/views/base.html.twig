@@ -30,7 +30,7 @@
         <![endif]-->
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
 
-        <script>var baseUrl = '{{ base_url }}';</script>
+        <script>var baseUrl = '{{ base_url }}'; var uid = '{{ app.user.id }}';</script>
 
         {% block javascripts %}
             {% javascripts
