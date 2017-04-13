@@ -101,9 +101,6 @@ class ArticleController extends Controller
         $articles = $this->getDoctrine()->getRepository('ArticlesBundle:Article')->findAll();
 
 	    $articles = $this->prepareArticlesForApi($articles);
-//	    exit;
-//	    var_dump($articles);
-//	    die;
         return new JsonResponse(array(
             'articles' => $articles,
         ));
@@ -152,6 +149,7 @@ class ArticleController extends Controller
 				$comments[$key]['id']       = $Comment->getId();
 				$comments[$key]['userId']   = $Comment->getUser()->getId();
 				$comments[$key]['comment']  = $Comment->getComment();
+				$comments[$key]['createdAt']  = $Comment->getCreatedAt()->format('s');
 				$comments[$key]['username'] = $Comment->getUser()->getUsername();
 				$comments[$key]['userProfileLink']    = $this->generateUrl('user_profile',
 													array('username' => $Comment->getUser()->getUsername()));

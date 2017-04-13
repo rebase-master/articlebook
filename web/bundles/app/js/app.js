@@ -37,9 +37,13 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
         if(mode == -1){
             url = baseUrl+'articles/'+articleId+'/unlike';
             likeText = 'Like';
+            lctr--;
+            if(lctr < 0)
+            lctr = 0;
         }else{
             url = baseUrl+'articles/'+articleId+'/like';
             likeText = 'Unlike';
+            lctr++;
         }
 
         $http({
@@ -49,11 +53,10 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
         }).success(function(response){
             $(target).parent().empty().append(
                 $compile(
-                    "<button ng-click='like($event,"+articleId+","+(mode*-1)+")' class='btn btn-xs btn-primary'><span class='glyphicon glyphicon-thumbs-up'></span> <span class='likeText'>"+likeText+"</span></button>"
+                    "<button ng-click='like($event,"+articleId+","+(mode*-1)+")' class='btn btn-xs btn-primary'><span class='likeText'>"+likeText+"</span></button>"
                 )($scope)
             );
-            //$scope.apply();
-            //$(target).parent().html('<button ng-click="like($event, '+articleId+', '+(mode*-1)+')" class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-thumbs-up"></span> <span class="likeText">'+likeText+'</span></button>');
+            lctrCont.text(lctr);
         }).error(function (response) {
            alert("Something went wrong.");
         });

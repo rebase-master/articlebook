@@ -4,7 +4,7 @@
 
     <div id="homepage" class="clearfix" ng-app="ahApp" ng-controller="ArticleController">
 
-        <div class="col-sm-12 col-md-8 home_common" id="content">
+        <div class="col-sm-12 col-md-offset-2 col-md-8 home_common" id="content">
 
             <div class="posts-group">
                 <div class="postbox">
@@ -88,11 +88,9 @@
                         <div class="interaction clearfix">
                             <div class="likec pull-left">
                                 <button ng-click="like($event, article.id, -1)" class="btn btn-xs btn-primary" ng-if="article.userLikes">
-                                    <span class="glyphicon glyphicon-thumbs-up"></span>
                                     <span class="likeText">Unlike</span>
                                 </button>
                                 <button ng-click="like($event, article.id, 1)" class="btn btn-xs btn-primary" ng-if="!article.userLikes">
-                                    <span class="glyphicon glyphicon-thumbs-up"></span>
                                     <span class="likeText">Like</span>
                                 </button>
                             </div>
@@ -138,10 +136,10 @@
 
         </div>{#content#}
 
-        <div class="col-sm-12 col-md-4 home_common" id="sidebar">
+        {#<div class="col-sm-12 col-md-4 home_common" id="sidebar">#}
 
-            <h3>Recent Articles</h3>
-        </div>{#sidebar#}
+            {#<h3>Recent Articles</h3>#}
+        {#</div>&#123;&#35;sidebar&#35;&#125;#}
 
     </div>{#homepage#}
 
