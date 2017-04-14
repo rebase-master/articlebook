@@ -131,11 +131,14 @@ class User implements UserInterface, AdvancedUserInterface, Serializable
 	private $articles;
 
 	public function __construct(){
-		$this->articles   = new ArrayCollection();
+//		$this->articles   = new ArrayCollection();
 		$this->salt = base_convert(sha1(uniqid(mt_rand(),true)),16,36);
 	}
 
 
+	public function getArticles(){
+		return $this->articles;
+	}
 	/**
      * Get id
      *

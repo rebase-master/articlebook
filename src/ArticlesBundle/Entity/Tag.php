@@ -30,7 +30,7 @@ class Tag
     private $name;
 
 	/**
-	 * @ORM\ManyToMany(targetEntity="ArticlesBundle\Entity\Article", mappedBy="tags")
+	 * @ORM\ManyToMany(targetEntity="ArticlesBundle\Entity\Article", mappedBy="tags",cascade={"persist"})
 	 */
 	protected $articles;
 
@@ -83,5 +83,9 @@ class Tag
     {
         return $this->name;
     }
+
+	public function getArticles(){
+		return $this->articles;
+	}
 }
 

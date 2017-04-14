@@ -22,11 +22,23 @@ class UserController extends Controller
 
 	public function profileAction($username){
 
+		/** @var \UserBundle\Entity\User $user */
 		$user = $this->getDoctrine()->getRepository('UserBundle:User')->findOneBy(array('username' => strip_tags($username)));
+		$articles = [];
+		$ctr = 0;
 
+		foreach ($user->getArticles() as $article) {
+			/** @var \ArticlesBundle\Entity\Article $article */
+			$articles[$ctr]['link'] = $article->getLink();
+			$articles[$ctr]['title'] = $article->getTitle();
+			$articles[$ctr]['description'] = $article->getDescription();
+			$articles[$ctr]['imageUrl'] = $article->getImageUrl();
+			$ctr++;
+		}
 
 		return array(
-			'user' => $user
+			'user' => $user,
+			'articles' => $articles
 		);
 	}
 

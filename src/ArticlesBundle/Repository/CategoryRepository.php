@@ -10,4 +10,23 @@ namespace ArticlesBundle\Repository;
  */
 class CategoryRepository extends \Doctrine\ORM\EntityRepository
 {
+
+	/**
+	 * @return array
+	 */
+	public function findAllByCategory($categoryName){
+		return $this->getEntityManager()
+			->createQueryBuilder()
+			->select(array('a.id','a.title','a.link','a.description','a.imageUrl'))
+			->from('ArticlesBundle:Article', 'a')
+			->innerJoin('ArticlesBundle:Category','c')
+			->where('a.category = c')
+			->andWhere('c.name = :categoryName')
+			->setParameter('categoryName', $categoryName)
+			->getQuery()
+			->getResult()
+			;
+	}
+
+
 }

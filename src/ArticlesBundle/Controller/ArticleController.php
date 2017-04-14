@@ -6,7 +6,9 @@ use ArticlesBundle\Entity\Article;
 use ArticlesBundle\Entity\Comment;
 use ArticlesBundle\Entity\Likes;
 use ArticlesBundle\Entity\Tag;
+use ArticlesBundle\Entity\Category;
 use Exception;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -45,9 +47,9 @@ class ArticleController extends Controller
 				    'message' => 'Oops! The article could not be added.'
 			    );
 		    }else{
-			    $encoders = array(new JsonEncoder());
-			    $normalizers = array(new ObjectNormalizer());
-			    $serializer = new Serializer($normalizers, $encoders);
+//			    $encoders = array(new JsonEncoder());
+//			    $normalizers = array(new ObjectNormalizer());
+//			    $serializer = new Serializer($normalizers, $encoders);
 			    
 			    $em = $this->getDoctrine()->getManager();
 			    $category = $this->getDoctrine()->getRepository('ArticlesBundle:Category')->findOneBy(array('id' => $articleCategory));
@@ -80,7 +82,7 @@ class ArticleController extends Controller
 			    $response = array(
 				    'status' => 'SUCCESS',
 				    'code'   => 1,
-				    'message' => $serializer->serialize($article, 'json')
+//				    'message' => $serializer->serialize($article, 'json')
 
 		    );
 		    }
@@ -98,12 +100,59 @@ class ArticleController extends Controller
      */
     public function indexAction()
     {
-        $articles = $this->getDoctrine()->getRepository('ArticlesBundle:Article')->findAll();
+        $articles = $this->getDoctrine()->getRepository('ArticlesBundle:Article')->findBy(array(), array('createdAt' => 'DESC'));
 
 	    $articles = $this->prepareArticlesForApi($articles);
         return new JsonResponse(array(
             'articles' => $articles,
         ));
+    }
+
+    /**
+     * Lists all category articles.
+     *
+     * @Route("/category/{category}", name="article_category_index")
+     * @Method("GET")
+     * @Template()
+     */
+    public function categoryArticlesAction($category)
+    {
+	    $Category = $this->getDoctrine()->getRepository('ArticlesBundle:Category')->findOneBy(array('name' => strtolower($category)));
+//	    var_dump($Category);
+//	    die;
+	    if($Category){
+		    $articles = $this->getDoctrine()->getRepository('ArticlesBundle:Category')->findAllByCategory($Category->getName());
+//		    $articles = $Category->getArticles();
+//		    var_dump($articles);
+//		    die;
+	    }else{
+		    $articles = null;
+	    }
+        return array(
+            'articles' => $articles,
+	        'category' => $category
+        );
+    }
+
+    /**
+     * Lists all tagged articles.
+     *
+     * @Route("/tag/{tag}", name="article_tag_index")
+     * @Method("GET")
+     * @Template()
+     */
+    public function taggedArticlesAction($tag)
+    {
+	    $Tag = $this->getDoctrine()->getRepository('ArticlesBundle:Tag')->findOneBy(array('name' => $tag));
+	    if($Tag){
+		    $articles = $Tag->getArticles();
+	    }else{
+		    $articles = null;
+	    }
+        return array(
+            'articles' => $articles,
+	        'tag'      => $tag
+        );
     }
 
 	/**
@@ -131,7 +180,6 @@ class ArticleController extends Controller
 			$result[$ctr]['link']        = $article->getLink();
 			$result[$ctr]['description'] = $article->getDescription();
 			$result[$ctr]['domain']      = $article->getDomain();
-			$result[$ctr]['category']    = $article->getCategory()->getName();
 			$result[$ctr]['createdAt']   = $article->getCreatedAt()->format('Y-m-d H:i:s');
 
 			$likeUserIds = [];
@@ -160,6 +208,19 @@ class ArticleController extends Controller
 				/** @var \ArticlesBundle\Entity\Tag $Tag */
 				$tags[$key]['id']   = $Tag->getId();
 				$tags[$key]['name'] = $Tag->getName();
+				$tags[$key]['url'] = $this->generateUrl('article_tag_index',
+															array('tag' => $Tag->getName()));
+			}
+
+			if($article->getCategory()) {
+				$category = $article->getCategory();
+				$result[$ctr]['category'] = array(
+					'name' => $category->getName(),
+					'url' => $this->generateUrl('article_category_index',
+						array('category' => $category->getName()))
+				);
+			}else{
+				$result[$ctr]['category'] = null;
 			}
 
 			$result[$ctr]['comments'] = $comments;

@@ -69,7 +69,9 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
         if(key == 13){
             $scope.atags.push({name: $(target).val()});
             $(target).val('');
+            event.preventDefault();
         }
+
     }//addTag()
 
     $scope.removeTag = function (event) {
@@ -117,6 +119,7 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
             params: {link: $scope.articleLink, tags: JSON.stringify($scope.atags), category: $scope.articleCategory}
         }).success(function(response) {
             NProgress.done();
+            location.reload(true);
         }).error(function (response) {
             NProgress.done();
         });

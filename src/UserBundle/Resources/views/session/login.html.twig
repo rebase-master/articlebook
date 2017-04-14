@@ -3,7 +3,6 @@
 {% block body %}
 <div class="container">
     <div class="col-sm-12 col-md-6 col-md-offset-3">
-        <article>
             <!-- Login error -->
             {% if error %}
                 <div class="alert alert-danger text-center">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
@@ -12,7 +11,7 @@
             {% if message is defined and message %}
                 <div class="alert-message-success">{{ message }}</div>
             {% endif %}
-            <form action="{{ path('security_login_check') }}" method="post" role="form" class="form-horizontal">
+            <form  id="register-form" action="{{ path('security_login_check') }}" method="post" role="form" class="form-horizontal">
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input class="form-control" type="email" id="email" name="_email" autocomplete="off"
@@ -23,9 +22,9 @@
                     <input class="form-control" type="password" id="password" name="_password" autocomplete="off" />
                 </div>
                 <button class="btn btn-primary" type="submit">login</button>
-                <p>New User? <a href="{{ path('register') }}">Register</a></p>
             </form>
-        </article>
+            <br />
+            <p>New User? <a href="{{ path('register') }}">Register</a></p>
     </div>
 </div>
 {% endblock %}

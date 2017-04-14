@@ -1,5 +1,32 @@
 {% extends '::base.html.twig' %}
 
 {% block body %}
-    <h1>Profile: {{ user.firstName }} {{ user.lastName }}</h1>
+    <h1>{{ user.firstName }} {{ user.lastName }}</h1>
+    <hr/>
+
+    <div class="clearfix articles-list">
+
+        <div class="posts-group">
+            <div class="posts">
+                {% for article in articles %}
+                    <div class="col-sm-4">
+                        <div class="post">
+
+                            <div class="link-group">
+                                <a href="{{ article.link }}" target="_blank">
+                                    <img src="{{ article.imageUrl }}" alt="Article Photo"/>
+                                    <div class="info">
+                                        <h3>{{ article.title }}</h3>
+                                        <p>{{ article.description }}</p>
+                                    </div>
+                                </a>
+                            </div>{#link-group#}
+
+                        </div>{#post#}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

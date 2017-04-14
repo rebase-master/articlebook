@@ -78,11 +78,14 @@
                                 </div>
                             </a>
                         </div>{#link-group#}
-                        <div class="tags-group">
-                            <div class="list" ng-if="article.tags">
+                        <div class="tags-group clearfix">
+                            <div class="list pull-left" ng-if="article.tags">
                                 <span class="label" ng-repeat="tag in article.tags">
-                                    <span class="tag">#{[ tag.name ]}</span>
+                                    <a ng-href="{[tag.url]}" class="tag">#{[ tag.name ]}</a>
                                 </span>
+                            </div>
+                            <div class="pull-right" ng-if="article.category">
+                                Category: <a class="text-muted" href="{[ article.category.url]}">{[ article.category.name ]}</a>
                             </div>
                         </div>
                         <div class="interaction clearfix">
@@ -135,11 +138,6 @@
             </div><!-- psots-group -->
 
         </div>{#content#}
-
-        {#<div class="col-sm-12 col-md-4 home_common" id="sidebar">#}
-
-            {#<h3>Recent Articles</h3>#}
-        {#</div>&#123;&#35;sidebar&#35;&#125;#}
 
     </div>{#homepage#}
 
