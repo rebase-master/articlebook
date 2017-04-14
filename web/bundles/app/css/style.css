@@ -112,12 +112,30 @@ textarea{
 .posts-group .link-group{
     position: relative;
 }
+.posts-group .link-group:hover .overlay{
+    opacity: 0.6;
+}
+.posts-group .link-group:hover .actions{
+    opacity: 1;
+}
 .posts-group .post .overlay{
-    background-color: rgba(0,0,0,0.5);
-    height: 100%;
+    background-color: rgb(0,0,0);
+}
+.posts-group .post .onhover{
     position: absolute;
+    height: 100%;
+    opacity: 0;
     top: 0;
     width: 100%;
+}
+.posts-group .actions.onhover{
+    padding: 25%;
+    z-index: 10;
+}
+.posts-group .link-group .onhover a {
+    color: #ffffff;
+    display: inline-block;
+    margin: 10px;
 }
 .posts-group .post .info {
     padding: 0 10px 0;
@@ -209,11 +227,23 @@ textarea{
 .post .tags-group {
     margin: 0 20px 10px;
 }
-.post .tags-group .label{
+.post .tags-group .label {
     color: #777;
-    font-size: 13px;
+    padding: 0 1px;
 }
-
+.post .tags-group a.tag {
+    background-color: #fafafa;
+    color: #999;
+    font-weight: 500;
+    padding: 3px 5px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    font-size: 12px;
+    text-decoration: none;
+}
+.post .tags-group a.tag:hover{
+    color: #666;
+}
 .articles-list .posts-group .post .info{
     height: 200px;
     overflow: hidden;

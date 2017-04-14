@@ -31,7 +31,6 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
             lctr     = parseInt(lctrCont.text())
 
             ;
-        console.log(mode);
         mode= parseInt(mode);
 
         if(mode == -1){
@@ -60,7 +59,7 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
         }).error(function (response) {
            alert("Something went wrong.");
         });
-    };
+    }; //like
 
     $scope.addTags = function (event) {
         var key = event.keyCode || event.which,
@@ -91,8 +90,6 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
             url: url,
             cache: true
         }).success(function(response) {
-            console.log("articles: ");
-            console.log(response.articles);
             $scope.articles = response.articles;
             NProgress.done();
 
@@ -108,7 +105,7 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
         var url = baseUrl+'articles/new';
         if($scope.articleLink != '' && $scope.articleCategory != '')
             saveArticle(url);
-    };
+    }; //addArticle
 
     function saveArticle(url) {
         NProgress.start();
@@ -119,11 +116,40 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
             params: {link: $scope.articleLink, tags: JSON.stringify($scope.atags), category: $scope.articleCategory}
         }).success(function(response) {
             NProgress.done();
-            location.reload(true);
+            if(response.code == 1){
+                //$scope.articles = $scope.articles.concat(response.article);
+                $scope.articles.unshift(response.article);
+            }
+            //location.reload(true);
         }).error(function (response) {
             NProgress.done();
         });
-    }
+    } //saveArticle
+
+    $scope.deleteArticle = function (event, articleId) {
+
+        if(confirm("Are you sure you want to delete this article?")){
+            var url = baseUrl+'articles/'+articleId+'/delete',
+                target = event.target;
+
+            $http({
+                method: 'DELETE',
+                url: url,
+                cache: false
+            }).success(function(response) {
+                NProgress.done();
+                if(response.code == 1){
+                    $(target).closest('.post').animate({opacity: 0}, 2000, function () {
+                        $(this).remove();
+                    })
+                }else{
+                    alert("An error occurred.");
+                }
+            }).error(function (response) {
+                NProgress.done();
+            });
+        }
+    }; //deleteArticle
 
     $scope.addComment = function (event, articleId) {
 
@@ -137,7 +163,7 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
                 saveComment(url, comment, articleId, $(target));
             }
         }
-    };
+    }; //addComment
 
     function saveComment(url, comment, articleId, ele) {
         NProgress.start();
@@ -169,7 +195,7 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
             NProgress.done();
             alert("something went wrong.");
         });
-    }
+    }; //savecomment
 
     $scope.removeComment = function (event, articleId, commentId) {
 
@@ -184,7 +210,8 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
         }).error(function (response) {
             NProgress.done();
         });
-    }
+    }; //removecomment
+
 
 
 }]);

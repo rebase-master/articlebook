@@ -73,18 +73,60 @@ class ArticleController extends Controller
 			    $em->persist($article);
 			    $em->flush();
 
+			    $article = $this->prepareArticlesForApi($article);
+
 			    $response = array(
 				    'status' => 'SUCCESS',
 				    'code'   => 1,
+				    'article' => $article
 		        );
 		    }
 
 		    return new JsonResponse($response);
 	    }
 	    return array();
-    }
+    }//new - add an article
 
-    /**
+	/**
+	 * Remove Comment from Article
+	 *
+	 * @Route("/{id}/delete", name="article_remove")
+	 * @Method("DELETE")
+	 */
+	public function removeArticleAction(Article $article, Request $request)
+	{
+		if($request->isXmlHttpRequest() && $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+
+			/** @var \UserBundle\Entity\User $user */
+			$user = $this->get('security.token_storage')->getToken()->getUser();
+
+			if(!empty($article)){
+
+				if($user->getId() == $article->getUser()->getId()) {
+
+					$em = $this->getDoctrine()->getManager();
+					try {
+						$em->remove($article);
+						$em->flush();
+						$responseData = array('code' => 1, 'status' => 'OK');
+					} catch (Exception $e) {
+						$responseData = array('code' => -1, 'status' => 'ERROR');
+					}
+				}else{
+						$responseData = array('code' => -2, 'status' => 'ERROR');
+					}
+
+			}else{
+				$responseData = array('code' => -3, 'status' => 'ERROR');
+			}
+		}else{
+			$responseData = array('code' => -4, 'status' => 'ERROR');
+		}
+		return new JsonResponse( $responseData );
+	}//removeArticle
+
+
+	/**
      * Lists all article entities.
      *
      * @Route("/", name="article_index")
@@ -148,24 +190,95 @@ class ArticleController extends Controller
 	 * @return mixed
 	 */
 	private function prepareArticlesForApi($articles){
-		$result = [];
-		$ctr = 0;
+
 		$user = $this->get('security.token_storage')->getToken()->getUser();
 
-		foreach ($articles as $article) {
+		if(is_array($articles)){
+
+			$result = [];
+			$ctr = 0;
+
+			foreach ($articles as $article) {
+				/**
+				 * @var \ArticlesBundle\Entity\Article $article
+				 * @var \UserBundle\Entity\User $user
+				 */
+				$result[$ctr]['id']          = $article->getId();
+				$result[$ctr]['username']    = $article->getUser()->getFirstName()." ".$article->getUser()->getLastName();
+				$result[$ctr]['userId']      = $article->getUser()->getId();
+				$result[$ctr]['liuserId']    = $user->getId();
+				$result[$ctr]['userProfileLink']    = $this->generateUrl('user_profile', array('username' => $article->getUser()->getUsername()));
+				$result[$ctr]['title']       = $article->getTitle();
+				$result[$ctr]['imageUrl']    = $article->getImageUrl();
+				$result[$ctr]['link']        = $article->getLink();
+				$result[$ctr]['description'] = $article->getDescription();
+				$result[$ctr]['domain']      = $article->getDomain();
+				$result[$ctr]['createdAt']   = $article->getCreatedAt()->format('Y-m-d H:i:s');
+
+				$likeUserIds = [];
+				foreach ($article->getLikes() as $Like) {
+					/** @var \ArticlesBundle\Entity\Likes $Like */
+					array_push($likeUserIds, $Like->getUser()->getId());
+				}
+
+				$result[$ctr]['likeIds'] = $likeUserIds;
+				$result[$ctr]['userLikes'] = in_array($user->getId(),$likeUserIds);
+
+				$comments = array();
+				foreach ($article->getComments() as $key => $Comment) {
+					/** @var \ArticlesBundle\Entity\Comment $Comment */
+					$comments[$key]['id']       = $Comment->getId();
+					$comments[$key]['userId']   = $Comment->getUser()->getId();
+					$comments[$key]['comment']  = $Comment->getComment();
+					$comments[$key]['createdAt']  = $Comment->getCreatedAt()->format('s');
+					$comments[$key]['username'] = $Comment->getUser()->getUsername();
+					$comments[$key]['userProfileLink']    = $this->generateUrl('user_profile',
+						array('username' => $Comment->getUser()->getUsername()));
+				}
+
+				$tags = array();
+				foreach ($article->getTags() as $key => $Tag) {
+					/** @var \ArticlesBundle\Entity\Tag $Tag */
+					$tags[$key]['id']   = $Tag->getId();
+					$tags[$key]['name'] = $Tag->getName();
+					$tags[$key]['url'] = $this->generateUrl('article_tag_index',
+						array('tag' => str_replace(' ', '-', $Tag->getName())));
+				}
+
+				if($article->getCategory()) {
+					$category = $article->getCategory();
+					$result[$ctr]['category'] = array(
+						'name' => ucwords($category->getName()),
+						'url' => $this->generateUrl('article_category_index',
+							array('category' => $category->getName()))
+					);
+				}else{
+					$result[$ctr]['category'] = null;
+				}
+
+				$result[$ctr]['comments'] = $comments;
+				$result[$ctr]['tags']     = $tags;
+
+				$ctr++;
+			}//for loop
+		}else{
+			$article = $articles;
+			$result = [];
 			/**
 			 * @var \ArticlesBundle\Entity\Article $article
 			 * @var \UserBundle\Entity\User $user
 			 */
-			$result[$ctr]['id']          = $article->getId();
-			$result[$ctr]['username']    = $article->getUser()->getFirstName()." ".$article->getUser()->getLastName();
-			$result[$ctr]['userProfileLink']    = $this->generateUrl('user_profile', array('username' => $article->getUser()->getUsername()));
-			$result[$ctr]['title']       = $article->getTitle();
-			$result[$ctr]['imageUrl']    = $article->getImageUrl();
-			$result[$ctr]['link']        = $article->getLink();
-			$result[$ctr]['description'] = $article->getDescription();
-			$result[$ctr]['domain']      = $article->getDomain();
-			$result[$ctr]['createdAt']   = $article->getCreatedAt()->format('Y-m-d H:i:s');
+			$result['id']          = $article->getId();
+			$result['username']    = $article->getUser()->getFirstName()." ".$article->getUser()->getLastName();
+			$result['userId']      = $article->getUser()->getId();
+			$result['liuserId']    = $user->getId();
+			$result['userProfileLink']    = $this->generateUrl('user_profile', array('username' => $article->getUser()->getUsername()));
+			$result['title']       = $article->getTitle();
+			$result['imageUrl']    = $article->getImageUrl();
+			$result['link']        = $article->getLink();
+			$result['description'] = $article->getDescription();
+			$result['domain']      = $article->getDomain();
+			$result['createdAt']   = $article->getCreatedAt()->format('Y-m-d H:i:s');
 
 			$likeUserIds = [];
 			foreach ($article->getLikes() as $Like) {
@@ -173,20 +286,8 @@ class ArticleController extends Controller
 				array_push($likeUserIds, $Like->getUser()->getId());
 			}
 
-			$result[$ctr]['likeIds'] = $likeUserIds;
-			$result[$ctr]['userLikes'] = in_array($user->getId(),$likeUserIds);
-
-			$comments = array();
-			foreach ($article->getComments() as $key => $Comment) {
-				/** @var \ArticlesBundle\Entity\Comment $Comment */
-				$comments[$key]['id']       = $Comment->getId();
-				$comments[$key]['userId']   = $Comment->getUser()->getId();
-				$comments[$key]['comment']  = $Comment->getComment();
-				$comments[$key]['createdAt']  = $Comment->getCreatedAt()->format('s');
-				$comments[$key]['username'] = $Comment->getUser()->getUsername();
-				$comments[$key]['userProfileLink']    = $this->generateUrl('user_profile',
-													array('username' => $Comment->getUser()->getUsername()));
-			}
+			$result['likeIds'] = $likeUserIds;
+			$result['userLikes'] = in_array($user->getId(),$likeUserIds);
 
 			$tags = array();
 			foreach ($article->getTags() as $key => $Tag) {
@@ -194,25 +295,24 @@ class ArticleController extends Controller
 				$tags[$key]['id']   = $Tag->getId();
 				$tags[$key]['name'] = $Tag->getName();
 				$tags[$key]['url'] = $this->generateUrl('article_tag_index',
-															array('tag' => str_replace(' ', '-', $Tag->getName())));
+					array('tag' => str_replace(' ', '-', $Tag->getName())));
 			}
 
 			if($article->getCategory()) {
 				$category = $article->getCategory();
-				$result[$ctr]['category'] = array(
+				$result['category'] = array(
 					'name' => ucwords($category->getName()),
 					'url' => $this->generateUrl('article_category_index',
 						array('category' => $category->getName()))
 				);
 			}else{
-				$result[$ctr]['category'] = null;
+				$result['category'] = null;
 			}
 
-			$result[$ctr]['comments'] = $comments;
-			$result[$ctr]['tags']     = $tags;
+			$result['comments'] = null;
+			$result['tags']     = $tags;
 
-			$ctr++;
-		}//for loop
+		}
 
 		return $result;
 
@@ -366,7 +466,7 @@ class ArticleController extends Controller
 	/**
 	 * Remove Comment from Article
 	 *
-	 * @Route("/{id}/comments/delete{commentId}", name="article_remove_comment")
+	 * @Route("/{id}/comments/delete/{commentId}", name="article_remove_comment")
 	 * @Method("DELETE")
 	 */
 	public function removeCommentAction(Article $article, Request $request, $commentId)

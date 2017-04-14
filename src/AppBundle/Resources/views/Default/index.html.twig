@@ -63,8 +63,13 @@
                 </div>
                 <div class="posts" ng-if="articles">
 
-                    <div class="post" ng-repeat="article in articles track by $index">
+                    <div class="post" ng-repeat="article in articles | orderBy: comment.createdAt: false track by $index">
                         <div class="link-group">
+                            <div class="overlay onhover"></div>
+                            <div class="actions onhover">
+                                <a class="btn btn-primary"  target="_blank" href="{[ article.link ]}">Open External Link</a>
+                                <button ng-if="article.liuserId == article.userId" ng-click="deleteArticle($event, article.id)" class="btn btn-danger">Delete this article</button>
+                            </div>
                             <div class="_ltop clearfix">
                                 <a class="text-primary pull-left" ng-href="{[ article.userProfileLink ]}">{[ article.username ]}</a>
                                 <p class="pull-right text-muted">{[ article.createdAt | timeAgo ]}</p>
