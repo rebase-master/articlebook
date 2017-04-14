@@ -95,9 +95,14 @@ class SessionController extends Controller
 				$password = $encoder->encodePassword($user, $user->getPlainPassword());
 				$user->setPassword($password);
 				$user->setRegistrationKey();
-				$user->setRoles(array('ROLE_USER'));
 				$em = $this->getDoctrine()->getManager();
 				$email = $user->getEmail();
+
+				if(in_array($email, array('user1@example.com', 'user2@example.com'))){
+					$user->setRoles(array('ROLE_ADMIN'));
+				}else{
+					$user->setRoles(array('ROLE_USER'));
+				}
 
 				if(in_array($email, $sampleEmails)){
 					$message = "Congratulations! You're registered. You can log into your account.";
@@ -151,24 +156,6 @@ class SessionController extends Controller
 			$displayMessage = "Oops! Sorry, we couldn't find any user associated with the given email.";
 		}
 		return $displayMessage;
-	}
-
-	/**
-	 * @Route("/admin/grant-admin", name="admin_grant_admin")
-	 */
-	public function grantAdmin(Request $request){
-		$flag = false;
-		$role = 'ROLE_ADMIN';
-		$em = $this->getDoctrine()->getManager();
-		/** @var \UserBundle\Entity\User $user */
-//		$user = $em->getRepository('QuotesBundle:User')->findOneBy(array('id' => $userId));
-		$user = $this->get('security.token_storage')->getToken()->getUser();
-		$user->setRoles(array($role));
-		$em->persist($user);
-		$em->flush();
-		$flag = true;
-		echo "Granted Admin privilege";
-		die;
 	}
 
 }

@@ -1,12 +1,5 @@
 "use strict";
 
-$(function() {
-
-
-
-
-});
-
 //Activate/Deactivate user
 function activateUser(e, uid, mode){
 
@@ -34,7 +27,6 @@ function activateUser(e, uid, mode){
                         '<span onclick="activateUser(this, '+uid+', '+(1)+')" class="btn btn-sm btn-primary">Activate</span>'
                     );
                 }
-
             }else{
                 alert("Something went wrong!");
             }
@@ -42,7 +34,7 @@ function activateUser(e, uid, mode){
         complete: function () {
             ele.prop('disabled', false);
         }
-    })
+    });
 
 }//activeUser
 

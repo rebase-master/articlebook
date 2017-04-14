@@ -117,7 +117,6 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
         }).success(function(response) {
             NProgress.done();
             if(response.code == 1){
-                //$scope.articles = $scope.articles.concat(response.article);
                 $scope.articles.unshift(response.article);
             }
             //location.reload(true);
