@@ -21,7 +21,7 @@ class DefaultController extends Controller
 	    $user = $this->get('security.token_storage')->getToken()->getUser();
 
 	    $articles   = $this->getDoctrine()->getRepository('ArticlesBundle:Article')->findAll();
-	    $categories = $this->getDoctrine()->getRepository('ArticlesBundle:Category')->findAll();
+	    $categories = $this->getDoctrine()->getRepository('ArticlesBundle:Category')->findBy(array(), array('name'=>'ASC'));
 
 	    return array(
 		    'articles' => $articles,

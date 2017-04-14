@@ -6,7 +6,6 @@ use ArticlesBundle\Entity\Article;
 use ArticlesBundle\Entity\Comment;
 use ArticlesBundle\Entity\Likes;
 use ArticlesBundle\Entity\Tag;
-use ArticlesBundle\Entity\Category;
 use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -14,9 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+
 /**
  * Article controller.
  *
@@ -47,10 +44,7 @@ class ArticleController extends Controller
 				    'message' => 'Oops! The article could not be added.'
 			    );
 		    }else{
-//			    $encoders = array(new JsonEncoder());
-//			    $normalizers = array(new ObjectNormalizer());
-//			    $serializer = new Serializer($normalizers, $encoders);
-			    
+
 			    $em = $this->getDoctrine()->getManager();
 			    $category = $this->getDoctrine()->getRepository('ArticlesBundle:Category')->findOneBy(array('id' => $articleCategory));
 			    $article = new Article();
@@ -82,9 +76,7 @@ class ArticleController extends Controller
 			    $response = array(
 				    'status' => 'SUCCESS',
 				    'code'   => 1,
-//				    'message' => $serializer->serialize($article, 'json')
-
-		    );
+		        );
 		    }
 
 		    return new JsonResponse($response);
@@ -118,13 +110,8 @@ class ArticleController extends Controller
     public function categoryArticlesAction($category)
     {
 	    $Category = $this->getDoctrine()->getRepository('ArticlesBundle:Category')->findOneBy(array('name' => strtolower($category)));
-//	    var_dump($Category);
-//	    die;
 	    if($Category){
 		    $articles = $this->getDoctrine()->getRepository('ArticlesBundle:Category')->findAllByCategory($Category->getName());
-//		    $articles = $Category->getArticles();
-//		    var_dump($articles);
-//		    die;
 	    }else{
 		    $articles = null;
 	    }
@@ -143,7 +130,7 @@ class ArticleController extends Controller
      */
     public function taggedArticlesAction($tag)
     {
-	    $Tag = $this->getDoctrine()->getRepository('ArticlesBundle:Tag')->findOneBy(array('name' => $tag));
+	    $Tag = $this->getDoctrine()->getRepository('ArticlesBundle:Tag')->findOneBy(array('name' => str_replace('-',' ', $tag)));
 	    if($Tag){
 		    $articles = $Tag->getArticles();
 	    }else{
@@ -151,7 +138,7 @@ class ArticleController extends Controller
 	    }
         return array(
             'articles' => $articles,
-	        'tag'      => $tag
+	        'tag'      => ucwords(str_replace('-',' ', $tag))
         );
     }
 
@@ -170,8 +157,6 @@ class ArticleController extends Controller
 			 * @var \ArticlesBundle\Entity\Article $article
 			 * @var \UserBundle\Entity\User $user
 			 */
-//			var_dump($article->getTags());
-//			die;
 			$result[$ctr]['id']          = $article->getId();
 			$result[$ctr]['username']    = $article->getUser()->getFirstName()." ".$article->getUser()->getLastName();
 			$result[$ctr]['userProfileLink']    = $this->generateUrl('user_profile', array('username' => $article->getUser()->getUsername()));
@@ -209,13 +194,13 @@ class ArticleController extends Controller
 				$tags[$key]['id']   = $Tag->getId();
 				$tags[$key]['name'] = $Tag->getName();
 				$tags[$key]['url'] = $this->generateUrl('article_tag_index',
-															array('tag' => $Tag->getName()));
+															array('tag' => str_replace(' ', '-', $Tag->getName())));
 			}
 
 			if($article->getCategory()) {
 				$category = $article->getCategory();
 				$result[$ctr]['category'] = array(
-					'name' => $category->getName(),
+					'name' => ucwords($category->getName()),
 					'url' => $this->generateUrl('article_category_index',
 						array('category' => $category->getName()))
 				);
@@ -418,34 +403,6 @@ class ArticleController extends Controller
 		return new JsonResponse( $responseData );
 	}
 
-	/**
-     * Finds and displays a article entity.
-     *
-     * @Route("/fetch", name="article_show")
-     * @Method("GET")
-     */
-    public function fetchAction()
-    {
-
-	    $url1 = 'http://www.socialmediatoday.com/content/difference-between-articles-and-blogs';
-	    $url2 = 'https://blog.hubspot.com/marketing/how-to-write-blog-post-simple-formula-ht';
-	    $url3 = 'http://indianexpress.com/article/business/market/sensex-bounces-125-points-nifty-above-9200-early-on-4606989/';
-	    $url4 = 'https://scotch.io/tutorials/build-a-restful-json-api-with-rails-5-part-two';
-	    $url5 = 'https://journal.thriveglobal.com/8-things-every-person-should-do-before-8-a-m-dab757641ed4';
-	    $url6 = 'http://wethementors.com';
-	    $tags = get_meta_tags($url6);
-	    echo "<pre>";
-	    print_r($tags);
-	    echo "</pre><br />OG TAGS:<pre>";
-	    $ogTags = $this->getOgMetaTags($url6);
-	    var_dump($ogTags);
-	    echo "</pre>";
-	    die;
-    }
-
-//	private function getOgMetaTags($url){
-//
-//	}
 	private function getMetaTags($url){
 		$sites_html = file_get_contents($url);
 

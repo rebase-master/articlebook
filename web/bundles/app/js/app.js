@@ -134,7 +134,6 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
         if(key == 13){
             var comment = $(target).val().trim();
             if(comment != ''){
-                //$(target).parent().next('.comments').prepend('my comment');
                 saveComment(url, comment, articleId, $(target));
             }
         }
@@ -178,7 +177,7 @@ appControllers.controller('ArticleController', ['$scope', '$rootScope', '$http',
         $http({
             method: 'DELETE',
             url: url,
-            cache: false,
+            cache: false
         }).success(function(response) {
             NProgress.done();
 

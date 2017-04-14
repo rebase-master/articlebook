@@ -44,7 +44,7 @@
                                                 >
                                             <option value="" disabled="disabled" selected="selected">Choose Category</option>
                                             {% for category in categories %}
-                                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                                <option value="{{ category.id }}">{{ category.name | title }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -64,7 +64,6 @@
                 <div class="posts" ng-if="articles">
 
                     <div class="post" ng-repeat="article in articles track by $index">
-
                         <div class="link-group">
                             <div class="_ltop clearfix">
                                 <a class="text-primary pull-left" ng-href="{[ article.userProfileLink ]}">{[ article.username ]}</a>
@@ -77,7 +76,7 @@
                                     <p>{[ article.description ]}</p>
                                 </div>
                             </a>
-                        </div>{#link-group#}
+                        </div><!-- link-group -->
                         <div class="tags-group clearfix">
                             <div class="list pull-left" ng-if="article.tags">
                                 <span class="label" ng-repeat="tag in article.tags">
@@ -113,7 +112,7 @@
                                        ng-model="articleComment"
                                        ng-keypress="addComment($event, article.id)"
                                 />
-                            </div>{#commentinput#}
+                            </div><!-- commentinput -->
 
                             <div class="comments">
                                 <div class="sqr" ng-repeat="comment in article.comments | limitTo: 10 | orderBy: comment.createdAt: true" ng-if="article.comments.length != 0">
@@ -129,16 +128,16 @@
                                     </div><!-- comment -->
                                 </div><!-- sqr-->
                             </div><!-- comments -->
-                        </div>
+                        </div><!-- commentsbox -->
 
-                    </div>{#post#}
+                    </div><!-- post -->
 
                 </div><!-- posts -->
 
             </div><!-- psots-group -->
 
-        </div>{#content#}
+        </div><!-- content -->
 
-    </div>{#homepage#}
+    </div><!-- homepage -->
 
 {%  endblock %}

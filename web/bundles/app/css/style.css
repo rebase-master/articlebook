@@ -109,6 +109,16 @@ textarea{
     box-shadow: 1px 3px 4px #ddd;
     margin-bottom: 30px;
 }
+.posts-group .link-group{
+    position: relative;
+}
+.posts-group .post .overlay{
+    background-color: rgba(0,0,0,0.5);
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
 .posts-group .post .info {
     padding: 0 10px 0;
     /*border-top: 1px solid #ddd;*/
